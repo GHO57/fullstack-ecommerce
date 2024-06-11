@@ -187,3 +187,17 @@ export const loadSeller = createAsyncThunk("seller/dashboard", async(thunkAPI) =
         }
     }
 })
+
+// Thunk for fetching seller orders
+export const getSellerOrders = createAsyncThunk('seller/getSellerOrders', async (_,thunkAPI) => {
+    try {
+        const { data } = await axios.get('/api/v1/seller/orders', {withCredentials: true});
+        return data;
+    } catch(error){
+        if(error.response){
+            return thunkAPI.rejectWithValue(error.response.data)
+        }else{
+            return thunkAPI.rejectWithValue({ message: error.message })
+        }
+    }
+});

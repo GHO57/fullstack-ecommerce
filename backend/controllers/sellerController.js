@@ -546,3 +546,45 @@ exports.getProductDetails = catchAsyncErrors(async(req, res, next) => {
         return next(new errorHandler('Something went wrong', 500))
     }
 })
+
+// Get seller orders
+exports.getSellerOrders = catchAsyncErrors(async (req, res, next) => {
+  const { id } = req.user[0][0];
+
+  try {
+      const [orderItems] = await pool.execute(
+          `SELECT oi.*, o.*, p.name as product_name 
+           FROM order_items oi 
+           JOIN orders o ON oi.order_id = o.id 
+           JOIN products p ON oi.product_id = p.id 
+           WHERE p.seller_id = ?`,  
+          [id]
+      );
+
+      if (orderItems.length > 0) {
+          let totalSales = 0;
+          let totalOrders = new Set();
+          let totalProductsSold = 0;
+
+          orderItems.forEach(item => {
+              totalSales += item.price * item.quantity;
+              totalOrders.add(item.order_id);
+              totalProductsSold += item.quantity;
+          });
+
+          res.status(200).json({
+              success: true,
+              orders: orderItems,
+              stats: {
+                  totalSales,
+                  totalOrders: totalOrders.size,
+                  totalProductsSold
+              }
+          });
+      } else {
+          return next(new errorHandler('No orders found', 404));
+      }
+  } catch (error) {
+      return next(new errorHandler('Something went wrong', 500));
+  }
+});

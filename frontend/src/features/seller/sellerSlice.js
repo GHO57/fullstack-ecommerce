@@ -10,7 +10,8 @@ import {
     getProductDetails,
     deleteMultipleProducts,
     restoreProduct,
-    restoreMultipleProducts
+    restoreMultipleProducts,
+    getSellerOrders
 } from './sellerThunks'
 
 const initialState = {
@@ -21,6 +22,14 @@ const initialState = {
     sellerLoading: false,
     isSellerAuthenticated: false,
     sellerMessage: null,
+    sellerError: null,
+    orders: [],
+    stats: {
+        totalSales: 0,
+        totalOrders: 0,
+        totalProductsSold: 0
+    },
+    sellerLoading: false,
     sellerError: null
 }
 
@@ -383,6 +392,32 @@ const sellerSlice = createSlice({
                     sellerError: null
                 }
             })
+            
+            .addCase(getSellerOrders.pending, (state) => {
+                return {
+                    ...state,
+                    sellerLoading: true,
+                    sellerError: null 
+                };
+            })
+            
+            .addCase(getSellerOrders.fulfilled, (state, action) => {
+                return {
+                    ...state,
+                    sellerLoading: false,
+                    orders: action.payload.orders,
+                    stats: action.payload.stats,                 
+                    sellerError: null
+                };
+            })
+            
+            .addCase(getSellerOrders.rejected, (state, action) => {
+                return {
+                    ...state,
+                    sellerLoading: false,
+                    sellerError: action.payload
+                };
+            });
     }
 })
 
