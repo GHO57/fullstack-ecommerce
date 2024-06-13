@@ -30,7 +30,22 @@ const SellerDashboard = () => {
     if (sellerError) return <Typography color="error">{sellerError}</Typography>;
 
     const fulfilledOrders = orders.filter(order => order.status === 'completed');
-    const pendingOrders = orders.filter(order => order.status == 'pending');
+    const pendingOrders = orders.filter(order => order.status === 'pending');
+
+    // Calculate product sales
+    const productSales = orders.reduce((acc, order) => {
+        if (!acc[order.product_name]) {
+            acc[order.product_name] = 0;
+        }
+        acc[order.product_name] += parseFloat(order.price) * order.quantity;
+        return acc;
+    }, {});
+
+    // Sort products by sales contribution
+    const sortedProductSales = Object.entries(productSales).sort((a, b) => b[1] - a[1]);
+
+    // Calculate total sales
+    const totalSales = sortedProductSales.reduce((acc, [product, sales]) => acc + sales, 0);
 
     return (
         <Box p={3}>
@@ -46,6 +61,29 @@ const SellerDashboard = () => {
                 ) : (
                     <Typography>No statistics available.</Typography>
                 )}
+            </Box>
+            <Box mb={3}>
+                <Typography variant="h6">Product Ranking</Typography>
+                <TableContainer component={Paper}>
+                    <Table>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>Product</TableCell>
+                                <TableCell>Sales</TableCell>
+                                <TableCell>Percentage</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {sortedProductSales.map(([product, sales]) => (
+                                <TableRow key={product}>
+                                    <TableCell>{product}</TableCell>
+                                    <TableCell>${sales.toFixed(2)}</TableCell>
+                                    <TableCell>{((sales / totalSales) * 100).toFixed(2)}%</TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
             </Box>
             <Box mb={3}>
                 <Typography variant="h6">Fulfilled Order Items</Typography>
