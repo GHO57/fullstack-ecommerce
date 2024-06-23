@@ -10,7 +10,8 @@ import { Loader } from '../../../layouts';
 import 'react-toastify/dist/ReactToastify.css';
 import { adminGetAllAdmins, deleteAdmin, updateAdminRole } from '../../../features/admin/adminThunks';
 import AddNewAdmin from '../AddNewAdmin/AddNewAdmin';
-
+import { roles } from '../data'
+import { categories } from '../../seller/data'
 const style = {
     position: 'absolute',
     top: '50%',
@@ -23,6 +24,24 @@ const style = {
     p: 4,
     borderRadius: '3px',
 }
+
+const ITEM_HEIGHT = 48; 
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+    PaperProps: {
+        style: {
+            maxHeight: ITEM_HEIGHT * 5 + ITEM_PADDING_TOP,
+            borderRadius: 7
+        },
+    },
+    MenuListProps: {
+        style: {
+            display: 'grid',
+            gridTemplateColumns: 'repeat(4, 1fr)',
+            gap: '2px'
+        },
+    },
+};
 
 
 const ManageAdmins = () => {
@@ -42,7 +61,7 @@ const ManageAdmins = () => {
     const [popup, setPopup] = useState(false)
 
     const [sortValue, setSortValue] = useState('')
-    const [categoryName, setCategoryName] = useState([])
+    const [roleName, setRoleName] = useState([])
     const [searchAdmin, setSearchAdmin] = useState('')
     const [selectedAdmins, setSelectedAdmins] = useState([])
 
@@ -110,8 +129,8 @@ const ManageAdmins = () => {
         setSortValue(e.target.value)
     }
 
-    const handleCategoryNameChange = (event) => {
-        setCategoryName(event.target.value);
+    const handleRoleNameChange = (event) => {
+        setRoleName(event.target.value);
     }
 
     const handleSearchAdmin = (event) => {
@@ -152,7 +171,7 @@ const ManageAdmins = () => {
             dispatch(adminGetAllAdmins())
         }
         setPage(0)
-    }, [dispatch, categoryName, sortValue, searchAdmin])
+    }, [dispatch, roleName, sortValue, searchAdmin])
 
     const sortAdmins = (admins, sortValue) => {
         switch (sortValue) {
@@ -173,14 +192,14 @@ const ManageAdmins = () => {
         }
     };
 
-    const filterAdmins = (admins, categories, searchTerm) => {
+    const filterAdmins = (admins, roles, searchTerm) => {
     
         if (!Array.isArray(admins)) {
             return [];
         }
 
         return admins.filter(admin => {
-            const matchesCategory = categories.length === 0 || categories.includes(admin.category)
+            const matchesCategory = roles.length === 0 || roles.includes(admin.role)
             const matchesSearch = searchTerm === '' || admin.fullname.toLowerCase().includes(searchTerm.toLowerCase()) || admin.email.toLowerCase().includes(searchTerm.toLowerCase())
             
             return matchesCategory && matchesSearch
@@ -188,8 +207,9 @@ const ManageAdmins = () => {
     }
 
     const sortedAndFilteredAdmins = useMemo(() => {
-        return sortAdmins(filterAdmins(allAdmins, categoryName, searchAdmin), sortValue);
-    }, [allAdmins, categoryName, searchAdmin, sortValue]) 
+        return sortAdmins(filterAdmins(allAdmins, roleName, searchAdmin), sortValue);
+    }, [allAdmins, roleName, searchAdmin, sortValue]) 
+
 
   return (
     <>
@@ -214,24 +234,25 @@ const ManageAdmins = () => {
                     </div>
                     <div className='flex justify-between w-full'>
                         <div className='flex gap-[1rem]'>
-                            {/* <FormControl size='small' sx={{ minWidth: 150 }}>
-                                <InputLabel sx={{ fontFamily: 'Montserrat, sans-serif' }}>Category</InputLabel>
+                            <FormControl size='small' sx={{ minWidth: 150 }}>
+                                <InputLabel sx={{ fontFamily: 'Montserrat, sans-serif' }}>Role</InputLabel>
                                 <Select 
-                                    value={categoryName} 
-                                    onChange={handleCategoryNameChange}
+                                    value={roleName} 
+                                    onChange={handleRoleNameChange}
                                     multiple
                                     input={<OutlinedInput label="Tag" />}
                                     renderValue={(selected) => selected.join(', ')}
-                                    sx={{ borderRadius: '2px' }}
+                                    sx={{ borderRadius: '2px', textOverflow: 'ellipsis', maxWidth: 150 }}
+                                    MenuProps={MenuProps}
                                     >
-                                    {categories.map((category, key) => (
-                                        <MenuItem key={key} value={category}>
-                                            <Checkbox checked={categoryName.indexOf(category) > -1}  />
-                                            <ListItemText primary={category} />
+                                    {roles.map((role, key) => (
+                                        <MenuItem key={key} value={role}>
+                                            <Checkbox checked={roleName.indexOf(role) > -1}  />
+                                            <ListItemText primary={role} />
                                         </MenuItem>
                                     ))}
                                 </Select>
-                            </FormControl> */}
+                            </FormControl>
                             <FormControl size='small' sx={{ minWidth: 120 }}>
                                 <InputLabel sx={{ fontFamily: 'Montserrat, sans-serif' }}>Sort By</InputLabel>
                                 <Select
@@ -372,20 +393,9 @@ const ManageAdmins = () => {
                                                         <Box className="flex flex-col justify-between gap-[1rem]" sx={{...style, height: 220}}>
                                                             <p className='text-[18px]'>Select the Role</p>
                                                             <select className={`cursor-pointer w-full bg-transparent border-[1px] border-lightGray2 hover:border-mediumGray rounded-[2px] py-[1rem] px-[1rem] ${adminRole === '' ? "text-mediumGray2" : "text-black"} bg-white`} value={adminRole} onChange={(e) => {setAdminRole(e.target.value)}} required>
-                                                                <option className='text-mediumGray' value="admin">Admin</option>
-                                                                <option className='text-mediumGray' value="project manager">Project Manager</option>
-                                                                <option className='text-mediumGray' value="software architect">Software Architect</option>
-                                                                <option className='text-mediumGray' value="users manager">Users Manager</option>
-                                                                <option className='text-mediumGray' value="sellers manager">Sellers Manager</option>
-                                                                <option className='text-mediumGray' value="orders manager">Orders Manager</option>
-                                                                <option className='text-mediumGray' value="content manager">Content Manager</option>
-                                                                <option className='text-mediumGray' value="finance manager">Finance Manager</option>
-                                                                <option className='text-mediumGray' value="hr manager">HR Manager</option>
-                                                                <option className='text-mediumGray' value="customer support manager">Customer Support Manager</option>
-                                                                <option className='text-mediumGray' value="marketing manager">Marketing Manager</option>
-                                                                <option className='text-mediumGray' value="it manager">IT Manager</option>
-                                                                <option className='text-mediumGray' value="compliance officer">Compliance Officer</option>
-                                                                <option className='text-mediumGray' value="operations manager">Operations Manager</option>
+                                                                {roles.map((role, key) => (
+                                                                    <option className='text-mediumGray' value={role}>{role}</option>
+                                                                ))}
                                                             </select>
 
                                                             <Button

@@ -129,8 +129,12 @@ exports.getSellerDetails = catchAsyncErrors(async (req, res, next) => {
 //add product
 
 exports.addProduct = catchAsyncErrors(async (req, res, next) => {
-  const { name, description, category, price, mrp, stock } = req.body;
+  let { name, description, category, price, mrp, stock } = req.body;
   const { id } = req.user[0][0];
+
+  price = parseInt(price)
+  mrp = parseInt(mrp)
+  stock = parseInt(stock)
 
   if (!name || !description || !category || !price || !mrp || !stock) {
     return next(new errorHandler("Enter all the required fields", 400));

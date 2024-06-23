@@ -5,6 +5,7 @@ import { useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faClose } from '@fortawesome/free-solid-svg-icons'
 import { addNewAdmin } from '../../../features/admin/adminThunks';
+import { roles } from '../data'
 
 
   const Input = styled(TextField)(({ theme }) => ({
@@ -64,34 +65,23 @@ const AddNewAdmin = ({ popup, setPopup }) => {
     <>
         {popup && (
             <div className='z-[6000] fixed left-0 top-0 right-0 w-full h-full bg-[rgba(0,0,0,0.7)] flex-center backdrop-blur-[6px]'>
-                <div className='relative flex-center w-[420px] h-auto bg-white shadow-xl border-lightGray3 border-[1px] rounded-[5px] px-[3rem] py-[2rem]'>
+                <div className='relative flex-center w-[420px] h-auto bg-white shadow-xl border-lightGray3 border-[1px] rounded-[5px] px-[3rem] py-[2.5rem]'>
                     <FontAwesomeIcon 
                         className='z-[100] absolute top-2 right-2 cursor-pointer hover:text-mediumGray2' 
                         onClick={closeAddNewAdminProduct}
                         icon={faClose}/>
                     <form className='w-full h-full flex-center flex-col gap-[2rem]' onSubmit={handleAddNewAdminForm}>
                         <h3 className='text-[30px] font-extrabold text-mediumGray'>Add New Admin</h3>
-                        <div className='flex-center flex-col gap-[1rem] w-full'>
+                        <div className='flex-center flex-col gap-[2rem] w-full'>
                             <Input label="Full Name" variant='outlined' type="text" size='medium' InputProps={{ sx: { fontFamily: 'Montserrat, sans-serif', '& .MuiOutlinedInput-notchedOutline': { borderRadius: '2px' } } }} InputLabelProps={{ sx: { fontFamily: 'Montserrat, sans-serif' } }} fullWidth value={fullName} onChange={handleFullNameChange} required />
                             <Input label="Email" variant="outlined" type='text' size='medium' InputProps={{ sx: { fontFamily: 'Montserrat, sans-serif', '& .MuiOutlinedInput-notchedOutline': { borderRadius: '2px' } } }} InputLabelProps={{ sx: { fontFamily: 'Montserrat, sans-serif' } }} fullWidth value={email} onChange={handleEmailChange} required />
                             <select className={`cursor-pointer w-full bg-transparent border-[1px] border-lightGray2 hover:border-mediumGray rounded-[2px] py-[1rem] px-[1rem] ${role === '' ? "text-mediumGray2" : "text-black"} bg-white`} value={role} onChange={handleRoleChange} required>
                                 <option className='text-mediumGray' value="">Role</option>
-                                <option className='text-mediumGray' value="admin">Admin</option>
-                                <option className='text-mediumGray' value="project manager">Project Manager</option>
-                                <option className='text-mediumGray' value="software architect">Software Architect</option>
-                                <option className='text-mediumGray' value="users manager">Users Manager</option>
-                                <option className='text-mediumGray' value="sellers manager">Sellers Manager</option>
-                                <option className='text-mediumGray' value="orders manager">Orders Manager</option>
-                                <option className='text-mediumGray' value="content manager">Content Manager</option>
-                                <option className='text-mediumGray' value="finance manager">Finance Manager</option>
-                                <option className='text-mediumGray' value="hr manager">HR Manager</option>
-                                <option className='text-mediumGray' value="customer support manager">Customer Support Manager</option>
-                                <option className='text-mediumGray' value="marketing manager">Marketing Manager</option>
-                                <option className='text-mediumGray' value="it manager">IT Manager</option>
-                                <option className='text-mediumGray' value="compliance officer">Compliance Officer</option>
-                                <option className='text-mediumGray' value="operations manager">Operations Manager</option>
+                                {roles.map((role, key) => (
+                                    <option className='text-mediumGray' value={role}>{role}</option>
+                                ))}
                             </select>
-                            <Button variant='contained' type='Add' sx={{ width: "100%", height: "2.7rem", fontFamily: 'Montserrat, sans-serif' }}>    
+                            <Button variant='contained' type='Add' sx={{ width: "100%", height: "2.9rem", fontFamily: 'Montserrat, sans-serif' }}>    
                                 Add
                             </Button>
                         </div>

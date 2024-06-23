@@ -1,10 +1,14 @@
 export const categories = [
-    "Food & Grocery",
-    "Clothing",
     "Electronics",
-    "Bags & Accessories",
-    "Kids",
-    "Pet",
-]
-
-
+    "Fashion",
+    "Home & Garden",
+    "Beauty & Health",
+    "Sports & Outdoors",
+    "Toys & Games",
+    "Books & Media",
+    "Automotive",
+    "Groceries",
+    "Pet Supplies",
+    "Baby & Kids",
+    "Office Supplies"
+];

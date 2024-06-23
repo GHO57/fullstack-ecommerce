@@ -405,3 +405,56 @@ exports.rejectSeller = catchAsyncErrors(async(req, res, next) => {
 
 
 })
+
+const getTotalRevenue = async () => {
+    const [rows] = await pool.execute('SELECT SUM(total) as totalRevenue FROM orders');
+    return rows[0].totalRevenue;
+};
+
+const getTotalProducts = async () => {
+    const [rows] = await pool.execute('SELECT COUNT(*) as totalProducts FROM products');
+    return rows[0].totalProducts;
+};
+
+const getTotalSellers = async () => {
+    const [rows] = await pool.execute('SELECT COUNT(*) as totalSellers FROM sellers');
+    return rows[0].totalSellers;
+};
+
+const getTotalOrders = async () => {
+    const [rows] = await pool.execute('SELECT COUNT(*) as totalOrders FROM orders');
+    return rows[0].totalOrders;
+};
+
+const getTotalUsers = async () => {
+    const [rows] = await pool.execute('SELECT COUNT(*) as totalUsers FROM users');
+    return rows[0].totalUsers;
+};
+
+const getTotalPendingOrders = async () => {
+    const [rows] = await pool.execute('SELECT COUNT(*) as totalPendingOrders FROM orders WHERE status = ? ', ['Pending']);
+    return rows[0].totalPendingOrders;
+};
+
+exports.getStats = catchAsyncErrors(async (req, res, next) => {
+    try {
+        const totalRevenue = await getTotalRevenue();
+        const totalProducts = await getTotalProducts();
+        const totalSellers = await getTotalSellers();
+        const totalOrders = await getTotalOrders();
+        const totalUsers = await getTotalUsers();
+        const totalPendingOrders = await getTotalPendingOrders();
+        
+
+        res.status(200).json({
+            totalRevenue,
+            totalProducts,
+            totalSellers,
+            totalOrders,
+            totalUsers,
+            totalPendingOrders
+        });
+    } catch (err) {
+        return next(new errorHandler('Something went wrong', 500));
+    }
+});

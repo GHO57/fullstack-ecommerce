@@ -4,11 +4,18 @@ import {
     loginsignup,
     signupuser,
     logoutuser,
-    loaduser
+    loaduser,
+    addDeliveryAddress,
+    deleteDeliveryAddress,
+    getAllOrders,
+    getOrderItems
 } from './userThunks'
 
 const initialState = {
     user: {},
+    deliveryAddress: [],
+    allOrders: [],
+    orderItems: [],
     loading: false,
     loadingLogin: false,
     isAuthenticated: false,
@@ -170,6 +177,129 @@ const userSlice = createSlice({
                 }
             })
 
+            //add Delivery Address pending
+            .addCase(addDeliveryAddress.pending, (state) => {
+                return{
+                    ...state, 
+                    loading: true,
+                    message: null,
+                    error: null
+                }
+            })
+
+            //add Delivery Address fulfilled
+            .addCase(addDeliveryAddress.fulfilled, (state, action) => {
+                return{
+                    ...state, 
+                    loading: false,
+                    deliveryAddress: action.payload.deliveryAddress || [],
+                    message: action.payload.message
+                }
+            })
+            
+            //add delivery address rejected
+            .addCase(addDeliveryAddress.rejected, (state, action) => {
+                return{
+                    ...state, 
+                    loading: false,
+                    deliveryAddress: [],
+                    error: action.payload
+                }
+            })
+
+            //delete Delivery Address pending
+            .addCase(deleteDeliveryAddress.pending, (state) => {
+                return{
+                    ...state, 
+                    loading: true,
+                    message: null,
+                    error: null
+                }
+            })
+
+            //delete Delivery Address fulfilled
+            .addCase(deleteDeliveryAddress.fulfilled, (state, action) => {
+                return{
+                    ...state, 
+                    loading: false,
+                    deliveryAddress: action.payload.deliveryAddress || [],
+                    message: action.payload.message
+                }
+            })
+            
+            //delete delivery address rejected
+            .addCase(deleteDeliveryAddress.rejected, (state, action) => {
+                return{
+                    ...state, 
+                    loading: false,
+                    deliveryAddress: [],
+                    error: action.payload
+                }
+            })
+
+            //get all orders pending
+            .addCase(getAllOrders.pending, (state) => {
+                return{
+                    ...state, 
+                    loading: true,
+                    allOrders: [],
+                    orderItems: [],
+                    message: null,
+                    error: null
+                }
+            })
+
+            //get all orders fulfilled
+            .addCase(getAllOrders.fulfilled, (state, action) => {
+                return{
+                    ...state, 
+                    loading: false,
+                    allOrders: action.payload.orders || [],
+                    message: action.payload.message
+                }
+            })
+            
+            //get all orders rejected
+            .addCase(getAllOrders.rejected, (state, action) => {
+                return{
+                    ...state, 
+                    loading: false,
+                    allOrders: [],
+                    error: action.payload
+                }
+            })
+
+            //get order items pending
+            .addCase(getOrderItems.pending, (state) => {
+                return{
+                    ...state, 
+                    loading: true,
+                    orderItems: [],
+                    message: null,
+                    error: null
+                }
+            })
+
+            //get order items fulfilled
+            .addCase(getOrderItems.fulfilled, (state, action) => {
+                return{
+                    ...state, 
+                    loading: false,
+                    orderItems: action.payload.orderItems || [],
+                    message: action.payload.message
+                }
+            })
+            
+            //get order items rejected
+            .addCase(getOrderItems.rejected, (state, action) => {
+                return{
+                    ...state, 
+                    loading: false,
+                    orderItems: [],
+                    error: action.payload
+                }
+            })
+
             //loaduser pending
             .addCase(loaduser.pending, (state) => {
                 return{
@@ -196,6 +326,7 @@ const userSlice = createSlice({
                     isLoggingIn: false,
                     newUser: false,
                     user: action.payload.user,
+                    deliveryAddress: action.payload.deliveryAddress || [],
                     OTPSent: false,
                     error: null
                 }
@@ -210,6 +341,7 @@ const userSlice = createSlice({
                     isAuthenticated: false,
                     newUser: false,
                     user: null,
+                    deliveryAddress: [],
                     OTPSent: false,
                     error: action.payload
                 }

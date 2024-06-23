@@ -2,6 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+
+*{
+    font-family: Montserrat, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    scroll-behavior: smooth;
+}
+
 :root{
     --primary: #ff5151;
     --secondary: #ff2121;
@@ -43,14 +52,6 @@
 
 .Toastify__toast:hover .Toastify__close-button{
     visibility: visible;
-}
-
-*{
-    font-family: Montserrat, sans-serif;
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    scroll-behavior: smooth;
 }
 
 .flex-center{
@@ -124,4 +125,22 @@
     left: 0;
     font-size: 13px;
     color: var(--primary);
+}
+
+
+.heading{
+    display: flex;
+    font-weight: bold;
+    font-size: 30px;
+    color: var(--darkGray);
+    gap: 0.9rem;
+}
+
+.heading:before{
+    content: "";
+    width: 20px;
+    height: 35px;
+    background-color: var(--primary);
+    border-radius: 4px;
+    align-self: center;
 }

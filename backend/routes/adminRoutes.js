@@ -1,6 +1,7 @@
 const express = require("express")
 const router = express.Router()
 const { getallusers, changeAdminRole, deleteUser, addNewAdmin, getalladmins, getAllsellers, adminLogin, deleteAdmin, logout, getAdminDetails, approveSeller, rejectSeller, getSellerApplications, deleteSeller } = require("../controllers/adminController")
+const { getStats } = require('../controllers/adminController');
 const { isAdminAuthenticated, authorizeRoles } = require("../middleware/auth")
 const { validateEmail, validateLogin, validateAll } = require("../middleware/validation")
 
@@ -47,5 +48,8 @@ router.route("/approveseller").post(validateAll, isAdminAuthenticated, authorize
 
 //reject seller application
 router.route("/rejectseller").post(validateAll, isAdminAuthenticated, authorizeRoles("admin"), rejectSeller)
+
+//admin stats
+router.route("/stats").get(validateAll, isAdminAuthenticated, authorizeRoles("admin"), getStats);
 
 module.exports = router

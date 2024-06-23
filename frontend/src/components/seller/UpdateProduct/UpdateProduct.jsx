@@ -6,6 +6,7 @@ import { updateProduct } from '../../../features/seller/sellerThunks';
 import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faClose } from '@fortawesome/free-solid-svg-icons'
+import { categories } from '../data';
 
 const VisuallyHiddenInput = styled('input')({
     clip: 'rect(0 0 0 0)',
@@ -131,12 +132,9 @@ const UpdateProduct = ({updatePopup, setUpdatePopup }) => {
                             <Input label="Description" variant="outlined" type='text' multiline rows={3} size='small' InputProps={{ sx: { fontFamily: 'Montserrat, sans-serif', '& .MuiOutlinedInput-notchedOutline': { borderRadius: '2px' } } }} InputLabelProps={{ sx: { fontFamily: 'Montserrat, sans-serif' } }} fullWidth value={desc} onChange={handleDescChange} required />
                             <select className={`cursor-pointer w-full bg-transparent border-[1px] border-lightGray2 hover:border-mediumGray rounded-[2px] py-[1rem] px-[1rem] ${category === '' ? "text-mediumGray2" : "text-black"} bg-white`} value={category} onChange={handleCategorychange} required>
                                 <option className='text-mediumGray' value="">Category</option>
-                                <option className='text-mediumGray' value="Food & Grocery">Food & Grocery</option>
-                                <option className='text-mediumGray' value="Clothing">Clothing</option>
-                                <option className='text-mediumGray' value="Electronics">Electronics</option>
-                                <option className='text-mediumGray' value="Bags & Accessories">Bags & Accessories</option>
-                                <option className='text-mediumGray' value="Kids">Kids</option>
-                                <option className='text-mediumGray' value="Pet">Pet</option>
+                                {categories.map((category) => (
+                                    <option className='text-mediumGray' value={category}>{category}</option>
+                                ))}
                             </select>
                             <Input label="Price" variant='outlined' type="number" size='small' InputProps={{ sx: { fontFamily: 'Montserrat, sans-serif', '& .MuiOutlinedInput-notchedOutline': { borderRadius: '2px' } } }} InputLabelProps={{ sx: { fontFamily: 'Montserrat, sans-serif' } }} fullWidth value={price} onChange={handlePriceChange} required />
                             <Input label="MRP" variant='outlined' type="number" size='small' InputProps={{ sx: { fontFamily: 'Montserrat, sans-serif', '& .MuiOutlinedInput-notchedOutline': { borderRadius: '2px' } } }} InputLabelProps={{ sx: { fontFamily: 'Montserrat, sans-serif' } }} fullWidth value={mrp} onChange={handleMrpChange} required />
@@ -149,7 +147,7 @@ const UpdateProduct = ({updatePopup, setUpdatePopup }) => {
                                 startIcon={imageName ? "" : <CloudUploadIcon />}
                                 sx={{ width: "100%", fontFamily: 'Montserrat, sans-serif' }}
                             >
-                                {imageName ? <p>{imageName}</p> : "Upload file"}
+                                {imageName ? <p>{imageName}</p> : "Upload Image file"}
                                 <VisuallyHiddenInput type="file" onChange={handleImageChange} />
                             </Button>
                             <Button variant='contained' type='submit' sx={{ width: "100%", height: "2.5rem", fontFamily: 'Montserrat, sans-serif' }}>    

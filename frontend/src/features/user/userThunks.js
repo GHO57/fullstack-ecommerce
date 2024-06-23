@@ -69,7 +69,69 @@ export const logoutuser = createAsyncThunk("user/logout", async(thunkAPI) => {
     }
 })
 
+//add delivery address
+export const addDeliveryAddress = createAsyncThunk("user/add-delivery-address", async(form, thunkAPI) => {
+    try{
+        const config = { headers : { "Content-Type" : "application/json" }};
+        const { data } = await axios.post('/api/v1/user/adddeliveryaddress', form, config)
 
+        return data
+    }catch(error){
+        if(error.response){
+            return thunkAPI.rejectWithValue(error.response.data)
+        }else{
+            return thunkAPI.rejectWithValue({ message: error.message })
+        }
+    }
+})
+
+//delete delivery address
+export const deleteDeliveryAddress = createAsyncThunk("user/delete-delivery-address", async(address_id, thunkAPI) => {
+    try{
+        const config = { headers : { "Content-Type" : "application/json" }};
+        const { data } = await axios.post('/api/v1/user/deletedeliveryaddress', { address_id }, config)
+
+        return data
+    }catch(error){
+        if(error.response){
+            return thunkAPI.rejectWithValue(error.response.data)
+        }else{
+            return thunkAPI.rejectWithValue({ message: error.message })
+        }
+    }
+})
+
+
+//get all orders
+export const getAllOrders = createAsyncThunk("user/get-orders", async(thunkAPI) => {
+    try{
+        const { data } = await axios.get('/api/v1/user/orders')
+
+        return data
+    }catch(error){
+        if(error.response){
+            return thunkAPI.rejectWithValue(error.response.data)
+        }else{
+            return thunkAPI.rejectWithValue({ message: error.message })
+        }
+    }
+})
+
+
+//get order items by order id
+export const getOrderItems = createAsyncThunk("user/orders/items", async(order_id, thunkAPI) => {
+    try{
+        const { data } = await axios.get(`/api/v1/user/order/items/${order_id}`)
+
+        return data
+    }catch(error){
+        if(error.response){
+            return thunkAPI.rejectWithValue(error.response.data)
+        }else{
+            return thunkAPI.rejectWithValue({ message: error.message })
+        }
+    }
+})
 
 //load user initially
 

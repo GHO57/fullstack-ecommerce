@@ -149,7 +149,7 @@ const AddProduct = ({ popup, setPopup }) => {
                                 startIcon={imageName ? "" : <CloudUploadIcon />}
                                 sx={{ width: "100%", fontFamily: 'Montserrat, sans-serif' }}
                             >
-                                {imageName ? <p>{imageName}</p> : "Upload file"}
+                                {imageName ? <p>{imageName}</p> : "Upload Image file"}
                                 <VisuallyHiddenInput type="file" onChange={handleImageChange} />
                             </Button>
                             <Button variant='contained' type='submit' sx={{ width: "100%", height: "2.5rem", fontFamily: 'Montserrat, sans-serif' }}>    

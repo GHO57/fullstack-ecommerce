@@ -1,6 +1,6 @@
 const express = require("express")
 const router = express.Router()
-const { sendOTP, loginsignup, logout, updateUser, getuserdetails, signupNewUser } = require("../controllers/userControllers")
+const { sendOTP, loginsignup, logout, updateUser, getuserdetails, signupNewUser, addDeliveryAddress, deleteDeliveryAddress, getAllOrders, getOrderItems } = require("../controllers/userControllers")
 const { isAuthenticated } = require("../middleware/auth")
 const { validateEmail, validateUserLogin, validateUserSignup, validateAll } = require("../middleware/validation") 
 
@@ -16,10 +16,22 @@ router.route("/signupuser").post(validateUserSignup, signupNewUser)
 //logout
 router.route("/logout").post(isAuthenticated, logout)
 
+//add delivery address
+router.route("/adddeliveryaddress").post(isAuthenticated, addDeliveryAddress)
+
+//delete delivery address
+router.route("/deletedeliveryaddress").post(isAuthenticated, deleteDeliveryAddress)
+
 //dashboard (get user details)
 router.route("/dashboard").get(isAuthenticated, getuserdetails)
 
 //update the user information
 router.route("/update").post(isAuthenticated, updateUser)
+
+//get all orders
+router.route("/orders").get(isAuthenticated, getAllOrders)
+
+//get order items by order id
+router.route("/order/items/:order_id").get(isAuthenticated, getOrderItems)
 
 module.exports = router

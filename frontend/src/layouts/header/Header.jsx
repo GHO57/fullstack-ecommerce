@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faBox, faAddressBook, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
 import { CiUser } from "react-icons/ci";
-import { PiShoppingCartSimpleThin, PiUserCircleThin } from "react-icons/pi";
+import { PiShoppingCartSimple, PiStorefrontLight  } from "react-icons/pi";
 import { RiShieldUserLine } from "react-icons/ri";
 import { SiGoogleforms } from "react-icons/si";
 import { MdSpaceDashboard, MdOutlineStorefront } from "react-icons/md";
@@ -14,6 +14,7 @@ import { Login } from "../../components"
 import { logoutuser } from '../../features/user/userThunks';
 import { adminLogout } from '../../features/admin/adminThunks';
 import { sellerlogout } from '../../features/seller/sellerThunks';
+import { Badge } from '@mui/material';
 
 const header = () => {
 
@@ -22,6 +23,7 @@ const header = () => {
   const { loading, message, error, isAuthenticated, user } = useSelector((state) => state.user)
   const { adminLoading, adminMessage, adminError, isAdminAuthenticated, admin } = useSelector((state) => state.admin)
   const { sellerLoading, sellerMessage, sellerError, isSellerAuthenticated, seller } = useSelector((state) => state.seller)
+  const { totalItems } = useSelector((state) => state.cart)
 
   const [showDropDown, setShowDropDown] = useState(false)
   const [showAdminDropDown, setShowAdminDropDown] = useState(false)
@@ -72,20 +74,20 @@ const header = () => {
               <img className='w-[90px]' src="/genie-logo.svg" alt="" />
             </Link>
           </div>
-          <div className='max-w-[400px] w-full rounded-[2px]'>
-            <div className={`${popLogin ? 'z-[-1]' : 'z-0'} bg-transparent relative flex-center w-full rounded-[2px]`}>
-              <input className='w-full pl-[3rem] pr-[1rem] py-[0.5rem] text-[14px] bg-[#f5f6f6] border-transparent border-[1px] rounded-[2px] focus:outline-none focus:border-mediumGray focus:border-[1px] focus:bg-white transition-colors duration-150' type="text" placeholder='Make a wish'/>
-              <FontAwesomeIcon className='absolute left-[1rem] text-[#777]' icon={faMagnifyingGlass} />
+          <div className='flex items-center text-mediumGray gap-[3rem] font-medium text-[14px]'>
+            <div className='min-w-[350px] w-full rounded-[2px]'>
+              <div className={`${popLogin ? 'z-[-1]' : 'z-0'} bg-transparent relative flex-center w-full rounded-[2px]`}>
+                <input className='w-full pl-[3rem] pr-[1rem] py-[0.5rem] text-[14px] bg-[#f5f6f6] border-transparent border-[1px] rounded-[2px] focus:outline-none focus:border-mediumGray focus:border-[1px] focus:bg-white transition-colors duration-150' type="text" placeholder='Make a wish'/>
+                <FontAwesomeIcon className='absolute left-[1rem] text-[#777]' icon={faMagnifyingGlass} />
+              </div>
             </div>
-          </div>
-          <div className='flex items-center gap-[3rem] font-medium text-[14px]'>
             {isAdminAuthenticated && (
               <div className={`relative ${popLogin ? 'z-[-1]' : 'z-0'} flex-center h-full`} onMouseEnter={() => handleAdminMouseHover(true)} onMouseLeave={() => handleAdminMouseHover(false)}>
-                <div className='flex-center gap-[0.5rem]'>
+                <div className={`flex-center gap-[0.5rem] transition-colors duration-100 ${showAdminDropDown ? "text-primary" : ""}`}>
                   <RiShieldUserLine className='text-[18px]' />
                   <p>Admin</p>
                 </div>
-                <div className='absolute top-0 h-[60.5px] w-full'>
+                <div className='absolute top-0 h-[60.5px] w-full hover:text-primary'>
                 </div>
                   {showAdminDropDown && (
                     <div className={`bg-white absolute top-[60.5px] right-[-100px] w-[250px] shadow-[0_1px_10px_rgba(0,0,0,0.08)] border-[1px] border-[#f5f5f6] p-[1rem] rounded-[2px]`}>
@@ -116,8 +118,8 @@ const header = () => {
                   )}    
             {isSellerAuthenticated && (
               <div className={`relative ${popLogin ? 'z-[-1]' : 'z-0'} flex-center h-full`} onMouseEnter={() => handleSellerMouseHover(true)} onMouseLeave={() => handleSellerMouseHover(false)}>
-                <div className='flex-center gap-[0.5rem]'>
-                  <MdOutlineStorefront className='text-[18px]' />
+                <div className={`flex-center gap-[0.5rem] transition-colors duration-100 ${showSellerDropDown ? "text-primary" : ""}`}>
+                  <PiStorefrontLight className='text-[18px]' />
                   <p>Seller</p>
                 </div>
                 <div className='absolute top-0 h-[60.5px] w-full'>
@@ -145,7 +147,7 @@ const header = () => {
                   </div>
                   )} 
               <div className={`relative ${popLogin ? 'z-[-1]' : 'z-0'} flex-center h-full`} onMouseEnter={() => handleMouseHover(true)} onMouseLeave={() => handleMouseHover(false)}>
-                <div className='flex-center gap-[0.5rem]'>
+                <div className={`flex-center gap-[0.5rem] transition-colors duration-100 ${showDropDown ? "text-primary" : ""}`}>
                   <CiUser className='text-[18px]' />
                   <p>{isAuthenticated ? "Profile" : "Login"}</p>
                 </div>
@@ -189,7 +191,11 @@ const header = () => {
                 )}
               </div>
             
-            <Link className='flex-center gap-[0.5rem]' to="/cart"><PiShoppingCartSimpleThin className='text-[19px]' />Cart</Link>
+            <Link className='flex-center gap-[0.5rem]' to="/cart">
+                <Badge badgeContent={totalItems} color='primary'>
+                  <PiShoppingCartSimple className='text-[19px]' />
+                </Badge>
+            </Link>
           </div>
         </div>
       </div>

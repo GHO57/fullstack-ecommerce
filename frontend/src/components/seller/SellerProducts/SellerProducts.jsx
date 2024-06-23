@@ -27,6 +27,23 @@ const style = {
     borderRadius: '3px',
 }
 
+const ITEM_HEIGHT = 48; 
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+    PaperProps: {
+        style: {
+            maxHeight: ITEM_HEIGHT * 5 + ITEM_PADDING_TOP,
+            borderRadius: 7
+        },
+    },
+    MenuListProps: {
+        style: {
+            display: 'grid',
+            gridTemplateColumns: 'repeat(4, 1fr)',
+            gap: '2px'
+        },
+    },
+};
 
 
 const SellerProducts = () => {
@@ -217,7 +234,8 @@ const SellerProducts = () => {
                                     multiple
                                     input={<OutlinedInput label="Tag" />}
                                     renderValue={(selected) => selected.join(', ')}
-                                    sx={{ borderRadius: '2px' }}
+                                    sx={{ borderRadius: '2px', textOverflow: 'ellipsis', maxWidth: 150 }}
+                                    MenuProps={MenuProps}
                                     >
                                     {categories.map((category, key) => (
                                         <MenuItem key={key} value={category}>

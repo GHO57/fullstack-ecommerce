@@ -178,11 +178,13 @@ exports.getuserdetails = catchAsyncErrors(async(req, res, next) => {
 
     try{
         const [user] = await pool.execute('SELECT * FROM users WHERE id = ?', [userId])
+        const [deliveryAddress] = await pool.execute('SELECT * FROM delivery_address WHERE user_id = ? AND is_deleted = 0', [userId])
 
         if(user.length > 0){
             res.status(200).json({
                 success: true,
                 user,
+                deliveryAddress,
                 cartId
             })
         }else{
@@ -193,9 +195,110 @@ exports.getuserdetails = catchAsyncErrors(async(req, res, next) => {
     }
 })
 
+// add new delivery address
+
+exports.addDeliveryAddress = catchAsyncErrors(async(req, res, next) => {
+    const { fullname, phone_number, alternate_phone_number, pincode, state, city, landmark, address } = req.body
+    const { userId } = req.user[0][0]
+
+    if(!fullname || !phone_number || !pincode || !state || !city || !address){
+        return next(new errorHandler("Enter all required the fields", 400))
+    }
+
+    try{
+        const uuid = generate_uuid()
+        await pool.execute('INSERT INTO delivery_address (id, user_id, fullname, mobile_number, alternate_phone_number, pincode, address, city, state, landmark) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [uuid, userId, fullname, phone_number, alternate_phone_number, pincode, address, city, state, landmark])
+        const [deliveryAddress] = await pool.execute('SELECT * FROM delivery_address WHERE user_id = ? AND is_deleted = 0', [userId])
+
+        res.status(200).json({
+            success: true,
+            message: 'Address added successfully',
+            deliveryAddress
+        })
+    }catch(error){
+        return next(new errorHandler(`Something went wrong` ,500))
+    }
+})
+
+
+// delete new delivery address
+
+exports.deleteDeliveryAddress = catchAsyncErrors(async(req, res, next) => {
+    const { address_id } = req.body
+    const { userId } = req.user[0][0]
+
+    if(!address_id){
+        return next(new errorHandler("Address cannot be deleted", 400))
+    }
+
+    try{
+        await pool.execute('UPDATE delivery_address SET is_deleted = 1 WHERE id = ? AND user_id = ?', [address_id, userId])
+        const [deliveryAddress] = await pool.execute('SELECT * FROM delivery_address WHERE user_id = ? AND is_deleted = 0', [userId])
+
+        res.status(200).json({
+            success: true,
+            message: 'Address deleted successfully',
+            deliveryAddress
+        })
+    }catch(error){
+        return next(new errorHandler(`Something went wrong ${error}` ,500))
+    }
+})
+
 
 //update user 
 
 exports.updateUser = catchAsyncErrors(async(req, res, next) => {
     
+})
+
+
+//get all orders
+
+exports.getAllOrders = catchAsyncErrors(async(req, res, next) => {
+    const { userId } = req.user[0][0]
+
+    if(!userId){
+        return next(new errorHandler("You're not logged in", 400))
+    }
+
+    try{
+        const [orders] = await pool.execute('SELECT * FROM orders WHERE user_id = ? AND payment_status IS NOT NULL AND payment_id IS NOT NULL', [userId])
+
+        if(orders.length > 0){
+            res.status(200).json({
+                success: true,
+                orders
+            })
+        }else{
+            return next(new errorHandler("No Orders Found", 404))
+        }
+    }catch(error){
+        return next(new errorHandler("Something went wrong", 500))
+    }
+})
+
+//get order items by order id
+
+exports.getOrderItems = catchAsyncErrors(async(req, res, next) => {
+    const { order_id } = req.params
+
+    if(!order_id){
+        return next(new errorHandler("Order id not provided", 400))
+    }
+
+    try{
+        const [orderItems] = await pool.execute('SELECT oi.id, oi.order_id, oi.product_id, oi.seller_id, oi.quantity, oi.price, oi.mrp, p.image_url, p.name FROM order_items oi, products p WHERE oi.product_id = p.id AND order_id = ?', [order_id])
+
+        if(orderItems.length > 0){
+            res.status(200).json({
+                success: true,
+                orderItems
+            })
+        }else{
+            return next(new errorHandler('Order Not Found', 404))
+        }
+    }catch(error){
+        return next(new errorHandler(`Something went wrong`, 500))
+    }
 })

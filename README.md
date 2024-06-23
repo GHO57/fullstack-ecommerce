@@ -20,9 +20,9 @@ Internship Team Project (12 members)
 
 ![cloudinary](https://img.shields.io/badge/cloudinary-3F5FFF?style=for-the-badge&logo=cloudinary&logoColor=white)&nbsp;
 
-<!-- **Payment Gateway:** -->
+**Payment Gateway:**
 
-<!-- ![paytm](https://img.shields.io/badge/Paytm-002970?style=for-the-badge&logo=paytm&logoColor=00BAF2) -->
+![razorpay](https://img.shields.io/badge/razorpay-0C2451?style=for-the-badge&logo=razorpay&logoColor=white)
 
 **Mail Service:** [NodeMailer](https://nodemailer.com/)
 
