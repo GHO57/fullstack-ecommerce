@@ -557,11 +557,18 @@ exports.getSellerOrders = catchAsyncErrors(async (req, res, next) => {
 
   try {
       const [orderItems] = await pool.execute(
-          `SELECT oi.*, o.*, p.name as product_name 
-           FROM order_items oi 
-           JOIN orders o ON oi.order_id = o.id 
-           JOIN products p ON oi.product_id = p.id 
-           WHERE p.seller_id = ?`,  
+          `SELECT 
+    oi.*, 
+    o.*, 
+    p.name AS product_name 
+FROM 
+    order_items oi 
+JOIN 
+    orders o ON oi.order_id = o.order_id 
+JOIN 
+    products p ON oi.product_id = p.id 
+WHERE 
+    p.seller_id = ?`,  
           [id]
       );
 
@@ -592,3 +599,28 @@ exports.getSellerOrders = catchAsyncErrors(async (req, res, next) => {
       return next(new errorHandler('Something went wrong', 500));
   }
 });
+
+//Update Order Status
+exports.updateOrderItemStatus = catchAsyncErrors(async (req, res, next) => {
+  const { orderItemId } = req.params;
+  const { item_status } = req.body;
+
+  try {
+      const [result] = await pool.execute(
+          `UPDATE order_items SET item_status = ? WHERE item_id = ?`, 
+          [item_status, orderItemId]
+      );
+
+      if (result.affectedRows === 0) {
+          return next(new errorHandler('Order not found', 404));
+      }
+
+      res.status(200).json({
+          success: true,
+          message: 'Order status updated successfully',
+      });
+  } catch (error) {
+      return next(new errorHandler('Something went wrong', 500));
+  }
+});
+

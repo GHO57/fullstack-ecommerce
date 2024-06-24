@@ -79,7 +79,7 @@ exports.paymentVerification = catchAsyncErrors(async(req, res, next) => {
 
                 for (let i = 0; i < cartItems.length; i++) {
                     const uuid = generate_uuid()
-                    await connection.execute('INSERT INTO order_items (id, order_id, product_id, seller_id, quantity, price, mrp) VALUES (?, ?, ?, ?, ?, ?, ?)', [uuid, razorpay_order_id, cartItems[i].product_id, cartItems[i].seller_id, cartItems[i].quantity, cartItems[i].price, cartItems[i].mrp]);
+                    await connection.execute('INSERT INTO order_items (id, order_id, product_id, seller_id, quantity, price, mrp) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [uuid, razorpay_order_id, cartItems[i].product_id, cartItems[i].seller_id, cartItems[i].quantity, cartItems[i].price, cartItems[i].mrp, 'Pending']);
                 }
 
                 await connection.commit();

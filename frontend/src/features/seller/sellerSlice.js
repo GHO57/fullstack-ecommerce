@@ -11,7 +11,8 @@ import {
     deleteMultipleProducts,
     restoreProduct,
     restoreMultipleProducts,
-    getSellerOrders
+    getSellerOrders,
+    updateOrderStatus
 } from './sellerThunks'
 
 const initialState = {
@@ -412,6 +413,35 @@ const sellerSlice = createSlice({
             })
             
             .addCase(getSellerOrders.rejected, (state, action) => {
+                return {
+                    ...state,
+                    sellerLoading: false,
+                    sellerError: action.payload
+                };
+            })
+
+            // updateOrderStatus
+            .addCase(updateOrderStatus.pending, (state) => {
+                return {
+                    ...state,
+                    sellerLoading: true,
+                    sellerError: null
+                };
+            })
+            .addCase(updateOrderStatus.fulfilled, (state, action) => {
+                console.log(action.payload)
+                const { orderItemId, item_status } = action.payload;
+                const updatedOrders = state.orders.map(order => 
+                    order.item_id === orderItemId ? { ...order, item_status } : order
+                );
+                return {
+                    ...state,
+                    sellerLoading: false,
+                    orders: updatedOrders,
+                    sellerError: null
+                };
+            })
+            .addCase(updateOrderStatus.rejected, (state, action) => {
                 return {
                     ...state,
                     sellerLoading: false,

@@ -191,7 +191,7 @@ export const loadSeller = createAsyncThunk("seller/dashboard", async(thunkAPI) =
 // Thunk for fetching seller orders
 export const getSellerOrders = createAsyncThunk('seller/getSellerOrders', async (_,thunkAPI) => {
     try {
-        const { data } = await axios.get('/api/v1/seller/orders', {withCredentials: true});
+        const { data } = await axios.get('/api/v1/seller/orders');
         return data;
     } catch(error){
         if(error.response){
@@ -201,3 +201,27 @@ export const getSellerOrders = createAsyncThunk('seller/getSellerOrders', async 
         }
     }
 });
+
+
+// Thunk: Update Order Status
+export const updateOrderStatus = createAsyncThunk(
+    'seller/updateOrderStatus',
+    async ({ orderItemId, item_status }, thunkAPI) => {
+        try {
+            const { data } = await axios.put(`/api/v1/seller/orders/${orderItemId}/status`, { item_status });
+            return { orderItemId, item_status, ...data };
+        } catch (error) {
+            if (error.response) {
+                return thunkAPI.rejectWithValue(error.response.data);
+            } else {
+                return thunkAPI.rejectWithValue({ message: error.message });
+            }
+        }
+    }
+);
+
+
+
+// Frontend Component: Seller Dashboard
+
+
