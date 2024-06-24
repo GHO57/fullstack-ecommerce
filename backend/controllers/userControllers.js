@@ -288,14 +288,15 @@ exports.getOrderItems = catchAsyncErrors(async(req, res, next) => {
     }
 
     try{
-        const [orderItems] = await pool.execute('SELECT oi.id, oi.order_id, oi.product_id, oi.seller_id, oi.quantity, oi.price, oi.mrp, p.image_url, p.name FROM order_items oi, products p WHERE oi.product_id = p.id AND order_id = ?', [order_id])
-
+        const [orderItems] = await pool.execute('SELECT oi.item_id, oi.order_id, oi.product_id, oi.seller_id, oi.quantity, oi.price, oi.mrp, p.image_url, p.name FROM order_items oi, products p WHERE oi.product_id = p.id AND order_id = ?', [order_id])
+        console.log(orderItems);
         if(orderItems.length > 0){
             res.status(200).json({
                 success: true,
                 orderItems
             })
         }else{
+            
             return next(new errorHandler('Order Not Found', 404))
         }
     }catch(error){

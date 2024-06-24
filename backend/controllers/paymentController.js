@@ -34,9 +34,9 @@ exports.checkout = catchAsyncErrors(async(req, res, next) => {
         
         if(redundantOrders.length > 0){
             await pool.execute('DELETE FROM orders WHERE payment_id IS NULL AND payment_status IS NULL')
-            await pool.execute('INSERT INTO orders (id, user_id, delivery_address_id, total, status, payment_method) VALUES (?, ?, ?, ?, ?, ?)', [order.id, userId, address_id, amount, 'Pending', paymentMethod])
+            await pool.execute('INSERT INTO orders (order_id, user_id, delivery_address_id, total, status, payment_method) VALUES (?, ?, ?, ?, ?, ?)', [order.id, userId, address_id, amount, 'Pending', paymentMethod])
         }else{
-            await pool.execute('INSERT INTO orders (id, user_id, delivery_address_id, total, status, payment_method) VALUES (?, ?, ?, ?, ?, ?)', [order.id, userId, address_id, amount, 'Pending', paymentMethod])
+            await pool.execute('INSERT INTO orders (order_id, user_id, delivery_address_id, total, status, payment_method) VALUES (?, ?, ?, ?, ?, ?)', [order.id, userId, address_id, amount, 'Pending', paymentMethod])
         }
         
 
@@ -62,7 +62,8 @@ exports.paymentVerification = catchAsyncErrors(async(req, res, next) => {
     shasum.update(`${razorpay_order_id}|${razorpay_payment_id}`);
 
     const digest = shasum.digest('hex');
-
+    console.log(digest);
+    console.log(razorpay_signature);
     if (digest === razorpay_signature) {
         let connection;
 
@@ -70,16 +71,16 @@ exports.paymentVerification = catchAsyncErrors(async(req, res, next) => {
             connection = await pool.getConnection();
             await connection.beginTransaction();
 
-            const [order] = await connection.execute('SELECT * FROM orders WHERE id = ?', [razorpay_order_id]);
+            const [order] = await connection.execute('SELECT * FROM orders WHERE order_id = ?', [razorpay_order_id]);
 
             if (order.length > 0) {
-                await connection.execute('UPDATE orders SET payment_id = ?, payment_status = "Completed" WHERE id = ?', [razorpay_payment_id, razorpay_order_id]);
+                await connection.execute('UPDATE orders SET payment_id = ?, payment_status = "Completed" WHERE order_id = ?', [razorpay_payment_id, razorpay_order_id]);
 
                 const [cartItems] = await connection.execute('SELECT ci.product_id, p.seller_id, ci.quantity, p.price, p.mrp FROM cart_items ci JOIN products p ON ci.product_id = p.id WHERE ci.cart_id = ?', [cartId]);
 
                 for (let i = 0; i < cartItems.length; i++) {
                     const uuid = generate_uuid()
-                    await connection.execute('INSERT INTO order_items (id, order_id, product_id, seller_id, quantity, price, mrp) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [uuid, razorpay_order_id, cartItems[i].product_id, cartItems[i].seller_id, cartItems[i].quantity, cartItems[i].price, cartItems[i].mrp, 'Pending']);
+                    await connection.execute('INSERT INTO order_items (item_id, order_id, product_id, seller_id, quantity, price, mrp, item_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [uuid, razorpay_order_id, cartItems[i].product_id, cartItems[i].seller_id, cartItems[i].quantity, cartItems[i].price, cartItems[i].mrp, 'Pending']);
                 }
 
                 await connection.commit();

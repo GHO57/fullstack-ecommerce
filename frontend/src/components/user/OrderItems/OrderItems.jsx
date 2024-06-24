@@ -31,7 +31,7 @@ const OrderItems = () => {
     
     useEffect(() => {
         if (orderItems.length > 0) {
-          const order = allOrders.find((order) => order.id === orderItems[0].order_id);
+          const order = allOrders.find((order) => order.order_id === orderItems[0].order_id);
           if (order) {
             setTotalPrice(order.total);
             setPaymentStatus(order.payment_status);
@@ -50,6 +50,7 @@ const OrderItems = () => {
       }, [deliveryAddressId])
 
       useEffect(() => {
+        console.log(order_id);
         dispatch(getOrderItems(order_id)) 
       }, [dispatch, order_id])
 

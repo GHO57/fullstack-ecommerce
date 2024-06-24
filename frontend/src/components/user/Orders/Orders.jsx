@@ -124,9 +124,9 @@ const Orders = () => {
                                     ? sortedOrders.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                     : sortedOrders).map((order, key) => (
                                     <TableRow
-                                        key={order.id}
+                                        key={order.order_id}
                                     >
-                                        <TableCell sx={{...table_body_cell_properties, ...truncation_properties, minWidth: 200, maxWidth: 200}} align="left">{order.id}</TableCell>
+                                        <TableCell sx={{...table_body_cell_properties, ...truncation_properties, minWidth: 200, maxWidth: 200}} align="left">{order.order_id}</TableCell>
                                         <TableCell sx={{...table_body_cell_properties, ...truncation_properties, minWidth: 300, maxWidth: 300}} align="left">₹{new Intl.NumberFormat('en-IN').format(order.total)}</TableCell>
                                         <TableCell sx={{...table_body_cell_properties, minWidth: 150, maxWidth: 150}} align="left">{order.status}</TableCell>
                                         <TableCell sx={{...table_body_cell_properties, minWidth: 150, maxWidth: 150}} align="left">{order.payment_status}</TableCell>
@@ -134,7 +134,7 @@ const Orders = () => {
                                         <TableCell sx={{...table_body_cell_properties, minWidth: 150, maxWidth: 150}} align="right">{order.created_at.split('T')[0]}</TableCell>
                                         <TableCell sx={{...table_body_cell_properties, minWidth: 70, maxWidth: 70}} align="center">
                                           <Tooltip title="more information" placement='left' arrow>
-                                            <IconButton onClick={() => handleInfoClick(order.id)} aria-label='info' size='medium'>
+                                            <IconButton onClick={() => handleInfoClick(order.order_id)} aria-label='info' size='medium'>
                                               <InfoIcon />
                                             </IconButton>
                                           </Tooltip>
