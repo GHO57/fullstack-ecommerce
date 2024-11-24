@@ -27,12 +27,12 @@ const Dashboard = () => {
 
     return (
         <>
-            <div className='min-h-[90vh] w-full px-[5rem] py-[3rem]'>
+            <div className='w-full pl-[6rem] pr-[2.5rem] py-[3rem]'>
 
                 <div className='w-full flex-center'>
-                    <h1 className='font-extrabold text-[30px] text-mediumGray'>Admin Dashboard</h1>
+                    <h1 className='font-extrabold text-[35px] text-mediumGray'>Admin Dashboard</h1>
                 </div>
-                <div className="admin-dashboard p-6  min-h-screen" >
+                <div className="admin-dashboard p-6" >
                     {/* <h1 className="text-3xl font-bold mb-6 text-center">Admin Dashboard</h1> */}
 
 

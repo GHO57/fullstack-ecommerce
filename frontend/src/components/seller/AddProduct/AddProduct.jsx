@@ -115,7 +115,7 @@ const AddProduct = ({ popup, setPopup }) => {
   return (
     <>
         {popup && (
-            <div className='z-[6000] fixed left-0 top-0 right-0 w-full h-full bg-[rgba(0,0,0,0.7)] flex-center backdrop-blur-[6px]'>
+            <div className='z-[10000] fixed left-0 top-0 right-0 w-full h-full bg-[rgba(0,0,0,0.7)] flex-center backdrop-blur-[6px]'>
                 <div className='relative flex-center w-[420px] h-auto bg-white shadow-xl border-lightGray3 border-[1px] rounded-[5px] px-[3rem] py-[2rem]'>
                     <FontAwesomeIcon 
                         className='z-[100] absolute top-2 right-2 cursor-pointer hover:text-mediumGray2' 

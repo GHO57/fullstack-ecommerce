@@ -85,7 +85,7 @@ const CategoriesCarousel = () => {
             {categories.map((category, index) => (
                 <Link 
                     key={index}
-                    to={`/${category.link}`}
+                    to={`/category/${category.link}`}
                     className="flex-center flex-col bg-white border-[1px] border-lightGray py-[2.5rem] rounded-[5px] text-black hover:bg-primary hover:border-primary hover:text-white transition-colors duration-150">
                     <div className="flex-center">
                         <p className="text-[30px] mb-[0.5rem]">{iconMap[category.icon]}</p>

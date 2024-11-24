@@ -24,6 +24,7 @@ const cart = require("./routes/cartRoutes")
 const seller = require("./routes/sellerRoutes")
 const product = require("./routes/productRoutes")
 const payment = require("./routes/paymentRoutes")
+const wishlist = require("./routes/wishlistRoutes")
 
 app.use("/api/v1/admin", admin)
 app.use("/api/v1/user", user)
@@ -31,6 +32,7 @@ app.use("/api/v1/user/cart", cart)
 app.use("/api/v1/seller", seller)
 app.use("/api/v1/product", product)
 app.use("/api/v1/payment", payment)
+app.use("/api/v1/wishlist", wishlist)
 
 
 //middleware for errors

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faClose } from '@fortawesome/free-solid-svg-icons'
 import { Link, useNavigate } from 'react-router-dom'
-import { sendotp, loginsignup, signupuser } from "../../../features/user/userThunks" 
+import { sendotp, loginsignup, signupuser, loaduser } from "../../../features/user/userThunks" 
 import { useDispatch, useSelector } from 'react-redux'
 import { LoginLoader } from '../../../layouts'
 import { loadCart } from '../../../features/cart/cartThunks'
@@ -52,6 +52,8 @@ const Login = ({ trigger, setTrigger }) => {
 
         dispatch(loginsignup(verifyForm)).then(() => {
             dispatch(loadCart())
+            window.location.reload()
+            navigate('/')
         })
 
     }

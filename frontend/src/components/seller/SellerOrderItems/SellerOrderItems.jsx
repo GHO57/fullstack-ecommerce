@@ -95,10 +95,10 @@ const SellerOrderItems = () => {
         {sellerLoading ? (
             <Loader />
         ) : (
-            <div className='min-h-[90vh] w-full px-[5rem] py-[3rem] '>
+            <div className='min-h-[90vh] w-full pl-[6rem] pr-[2.5rem] py-[3rem] '>
                 <div className='flex flex-col gap-[2rem]'>
                     <div className='w-full flex-center'>
-                        <h1 className='font-extrabold text-[30px] text-mediumGray'>Order Details</h1>
+                        <h1 className='font-extrabold text-[35px] text-mediumGray'>Order Details</h1>
                     </div>
                     <div className='flex gap-[1rem]'>
                         <div className='flex-[2] flex flex-col gap-[1rem]'>

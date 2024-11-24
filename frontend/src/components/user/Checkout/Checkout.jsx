@@ -25,7 +25,7 @@ import { addDeliveryAddress, deleteDeliveryAddress, getAllOrders, getOrderItems 
 import { Loader } from '../../../layouts';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { clearCart } from '../../../features/cart/cartThunks';
+import { clearCart, loadCart } from '../../../features/cart/cartThunks';
 import ButtonLoader from '../../../layouts/ButtonLoader/ButtonLoader';
 
 
@@ -209,6 +209,10 @@ const Checkout = () => {
     setAddressIndex(null)
   }, [deliveryAddress])
 
+  useEffect(() => {
+    dispatch(loadCart())
+  }, [dispatch])
+
   return (
     <>
     {loading ? (
@@ -240,6 +244,7 @@ const Checkout = () => {
                                             value={fullName}
                                             onChange={(e) => setFullName(e.target.value)}
                                             variant="outlined"
+                                            inputProps={{ maxLength: 60 }}
                                             required
                                             sx={{ mb: 2 }}
                                             />
@@ -250,6 +255,7 @@ const Checkout = () => {
                                                 value={phoneNumber}
                                                 onChange={(e) => setPhoneNumber(e.target.value)}
                                                 variant="outlined"
+                                                inputProps={{ maxLength: 10 }}
                                                 required
                                                 sx={{ mb: 2 }}
                                                 />
@@ -259,6 +265,7 @@ const Checkout = () => {
                                                 value={alternatePhoneNumber}
                                                 onChange={(e) => setAlternatePhoneNumber(e.target.value)}
                                                 variant="outlined"
+                                                inputProps={{ maxLength: 10 }}
                                                 sx={{ mb: 2 }}
                                                 />
                                             </div>
@@ -270,6 +277,7 @@ const Checkout = () => {
                                                 onChange={(e) => setPincode(e.target.value)}
                                                 variant="outlined"
                                                 required
+                                                inputProps={{ maxLength: 6 }}
                                                 sx={{ mb: 2 }}
                                                 />
                                                 <TextField
@@ -278,12 +286,14 @@ const Checkout = () => {
                                                 value={state}
                                                 onChange={(e) => setState(e.target.value)}
                                                 variant="outlined"
+                                                inputProps={{ maxLength: 30 }}
                                                 required
                                                 sx={{ mb: 2 }}
                                                 />
                                                 <TextField
                                                 fullWidth
                                                 label="City"
+                                                inputProps={{ maxLength: 30 }}
                                                 value={city}
                                                 onChange={(e) => setCity(e.target.value)}
                                                 variant="outlined"
@@ -297,6 +307,7 @@ const Checkout = () => {
                                             value={landmark}
                                             onChange={(e) => setLandmark(e.target.value)}
                                             variant="outlined"
+                                            inputProps={{ maxLength: 100 }}
                                             sx={{ mb: 2 }}
                                             />
                                             <TextField
@@ -307,6 +318,7 @@ const Checkout = () => {
                                             variant="outlined"
                                             multiline
                                             rows={4}
+                                            inputProps={{ maxLength: 200 }}
                                             required
                                             sx={{ mb: 2 }}
                                             />
@@ -338,9 +350,6 @@ const Checkout = () => {
                                                 </span>
                                                 <p className='font-[Roboto] text-mediumGray text-[14px] max-w-[500px]'>{address.address}, {address.state}, {address.city}, {address.pincode}, india, {address.landmark}</p>
                                                 <span className='flex gap-[2rem]'>
-                                                    <button className='font-[Roboto] text-primary font-medium'>
-                                                        EDIT
-                                                    </button>
                                                     <button onClick={() => handleAddressDelete(address.id)} className='font-[Roboto] text-primary font-medium'>
                                                         DELETE
                                                     </button>

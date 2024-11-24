@@ -31,7 +31,8 @@ const MenuProps = {
     PaperProps: {
         style: {
             maxHeight: ITEM_HEIGHT * 5 + ITEM_PADDING_TOP,
-            borderRadius: 7
+            borderRadius: 7,
+            marginLeft: '5rem'
         },
     },
     MenuListProps: {
@@ -218,7 +219,7 @@ const ManageAdmins = () => {
     ) : (
         <>
         <AddNewAdmin popup={popup} setPopup={setPopup} />
-        <div className='min-h-[90vh] w-full px-[5rem] py-[3rem]'>
+        <div className=' w-full pl-[6rem] pr-[2.5rem] py-[3rem]'>
             <div className='flex flex-col justify-center items-start w-full h-full gap-[1rem]'>
                 {allAdmins.length === 0 ? (
                     <div className='flex-center flex-col w-full pt-[3rem] gap-[1rem]'>
@@ -230,7 +231,7 @@ const ManageAdmins = () => {
                 ):(
                 <>
                     <div className='w-full flex-center'>
-                        <h1 className='font-extrabold text-[30px] text-mediumGray'>All Admins</h1>
+                        <h1 className='font-extrabold text-[35px] text-mediumGray'>All Admins</h1>
                     </div>
                     <div className='flex justify-between w-full'>
                         <div className='flex gap-[1rem]'>

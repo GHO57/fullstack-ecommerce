@@ -71,7 +71,11 @@ exports.sellerLogin = catchAsyncErrors(async (req, res, next) => {
       "SELECT * FROM products WHERE seller_id = ? AND is_deleted = 0",
       [seller_id]
     )
-    sendSellerToken(seller, sellerProducts, 201, res);
+    const [deletedProducts] = await pool.execute(
+      "SELECT * FROM products WHERE seller_id = ? AND is_deleted = 1",
+      [seller_id]
+    )
+    sendSellerToken(seller, sellerProducts, deletedProducts, 201, res);
   } else {
     res.status(400).json({
       success: false,
@@ -408,7 +412,10 @@ exports.restoreMultipleProducts = catchAsyncErrors(async (req, res, next) => {
 //update product details
 
 exports.updateProductDetails = catchAsyncErrors(async (req, res, next) => {
-  const { id, name, description, category, price, mrp, stock } = req.body;
+  let { id, name, description, category, price, mrp, stock } = req.body;
+
+  price = Number(price)
+  mrp = Number(mrp)
 
   if (!id || !name || !description || !category || !price || !mrp || !stock) {
     return next(new errorHandler("No fields should be left empty", 400));

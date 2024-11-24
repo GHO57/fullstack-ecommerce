@@ -29,7 +29,7 @@ const sendToken = (user, cartId, statusCode, res) => {
     })
 }
 
-const sendSellerToken = (seller, sellerProducts, statusCode, res) => {
+const sendSellerToken = (seller, sellerProducts, deletedProducts, statusCode, res) => {
     const id = seller[0].id
     const email = seller[0].email
     const gstin = seller[0].gstin
@@ -51,6 +51,7 @@ const sendSellerToken = (seller, sellerProducts, statusCode, res) => {
         success: true,
         seller,
         sellerProducts,
+        deletedProducts,
         token
     })
 }

@@ -30,7 +30,8 @@ const MenuProps = {
     PaperProps: {
         style: {
             maxHeight: ITEM_HEIGHT * 5 + ITEM_PADDING_TOP,
-            borderRadius: 7
+            borderRadius: 7,
+            marginLeft: '5rem'
         },
     },
     MenuListProps: {
@@ -210,7 +211,7 @@ const DeletedProducts = () => {
         <Loader/>
     ) : (
         <>
-        <div className='min-h-[90vh] w-full px-[5rem] py-[3rem]'>
+        <div className='min-h-[90vh] w-full pl-[6rem] pr-[2.5rem] py-[3rem]'>
             <div className='flex flex-col justify-center items-start w-full h-full gap-[1rem]'>
                 {sellerDeletedProducts.length === 0 ? (
                     <div className='flex-center flex-col w-full pt-[3rem] gap-[1rem]'>

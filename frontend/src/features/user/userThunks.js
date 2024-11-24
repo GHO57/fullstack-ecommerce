@@ -117,7 +117,6 @@ export const getAllOrders = createAsyncThunk("user/get-orders", async(thunkAPI) 
     }
 })
 
-
 //get order items by order id
 export const getOrderItems = createAsyncThunk("user/orders/items", async(order_id, thunkAPI) => {
     try{

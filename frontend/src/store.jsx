@@ -5,6 +5,7 @@ import adminReducer from "./features/admin/adminSlice"
 import sellerReducer from "./features/seller/sellerSlice"
 import productsReducer from "./features/products/productsSlice"
 import cartReducer from "./features/cart/cartSlice"
+import wishlistReducer from "./features/wishlist/wishlistSlice"
 
 //combine reducers
 
@@ -14,6 +15,7 @@ const rootReducer = combineReducers({
     admin: adminReducer,
     seller: sellerReducer,
     products: productsReducer,
+    wishlist: wishlistReducer
 })
 
 //configure store

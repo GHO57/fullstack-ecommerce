@@ -10,6 +10,10 @@ export default defineConfig({
     }
   },
   build: {
-    sourcemap: true
+    sourcemap: true,
+    minify: 'esbuild',
+    rollupOptions: {
+      treeshake: true
+    }
   }
 })

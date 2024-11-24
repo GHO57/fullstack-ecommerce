@@ -67,6 +67,7 @@ const sellerSlice = createSlice({
                     ...state,
                     seller: action.payload.seller,
                     sellerProducts: action.payload.sellerProducts,
+                    sellerDeletedProducts: action.payload.deletedProducts,
                     sellerLoading: false,
                     isSellerAuthenticated: true,
                 }
@@ -513,7 +514,6 @@ const sellerSlice = createSlice({
                 return {
                     ...state,
                     sellerLoading: false,
-                    sellerError: action.payload
                 };
             })
 

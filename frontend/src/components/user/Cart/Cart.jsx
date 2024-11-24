@@ -53,6 +53,11 @@ const Cart = () => {
         window.scrollTo(0, 0)
         setDiscount(totalMRP - totalPrice)
     },[totalMRP, totalPrice])
+
+
+    useEffect(() => {
+        dispatch(loadCart())
+    }, [dispatch])
     
     return (
     <>
@@ -61,11 +66,11 @@ const Cart = () => {
         ) : ( cart.length === 0 ? (
                 <div className='flex-center flex-col w-full py-[5rem] gap-[2rem]'>
                     <div className='w-full flex-center flex-col gap-[3rem]'>
-                        <img className='max-w-[400px] w-full' src="/empty_cart.svg" alt="empty cart image" />
-                        <h2 className='text-[30px] font-bold text-darkGray2'>Cart is Empty</h2>
+                        <img className='max-w-[270px] w-full' src="/empty_cart.svg" alt="empty cart image" />
+                        <h2 className='text-[27px] font-extrabold text-darkGray2'>Your Cart is Currently Empty!</h2>
                     </div>
-                    <Link className='btn-fill rounded-[3px]' to="/products">
-                        Add Some Products
+                    <Link className='btn-fill rounded-[10px]' to="/products">
+                        Browse Products
                     </Link>
                 </div>
             ) : (

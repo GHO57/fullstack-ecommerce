@@ -2,6 +2,7 @@ const express = require("express")
 const router = express.Router()
 const { addToCart, removeFromCart, getCartItems, deleteItemFromCart, clearCart } = require("../controllers/cartController")
 const { isAuthenticated, authorizeRoles } = require("../middleware/auth")
+const { validateEmail } = require("../middleware/validation")
 
 router.route("/additem").post(isAuthenticated, addToCart)
 

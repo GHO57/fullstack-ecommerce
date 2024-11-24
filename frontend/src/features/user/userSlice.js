@@ -124,7 +124,7 @@ const userSlice = createSlice({
                         newUser: false,
                         user: action.payload.user,
                         OTPSent: false,
-                        message: `Welcome ${action.payload.user[0].fullname}`,
+                        message: null,
                         error: null
                     }
                 }
@@ -421,6 +421,7 @@ const userSlice = createSlice({
             .addCase(updateAddress.fulfilled, (state, action) => {
                 return{
                     ...state,
+                    loading: false,
                     deliveryAddress : action.payload.deliveryAddress,
                     allDeliveryAddress : action.payload.deliveryAddress,
                     message: action.payload.message,

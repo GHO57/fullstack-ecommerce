@@ -2,16 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { TextField, Button, Typography, MenuItem, Select, FormControl, InputLabel, Paper, CircularProgress } from '@mui/material';
 import { updateAddress, updateFullName } from '../../../features/user/userThunks';
+import { Loader } from '../../../layouts';
 
 const MyAccount = () => {
     const dispatch = useDispatch();
     const user = useSelector((state) => state.user.user[0]);
     const { loading, error } = useSelector((state) => state.user);
-    // console.log(loading, error);
     const deliveryAddresses = useSelector((state) => state.user.deliveryAddress);
 
     const calculateAccountAge = () => {
-      // console.log(user.createdAt);
       const createdDate = new Date(user.createdAt);
       const currentDate = new Date();
     
@@ -129,125 +128,131 @@ const MyAccount = () => {
         setIsEditing(false);
         setHasUnsavedChanges(false);
     };
-    if (loading) return <CircularProgress />;
-    if (error) return <Typography color="error">{error}</Typography>;
 
     return (
-        <div>
-            <Typography variant="h4">My Details</Typography>
-            <Paper className="p-4">
-            <TextField
-                    label="Full Name"
-                    name="fullname"
-                    value={fullname}
-                    onChange={handleFullNameChange}
-                    fullWidth
-                    margin="normal"
-                />              
-                <Typography variant="h6">Email: {email}</Typography>
-              {accountAge && (
-                <Typography variant="h6">
-                Account Age: {accountAge.years} years, {accountAge.months} months, {accountAge.days} days
-                </Typography>
-              )}
-              { fullnameChanged && (
-                <Button variant="contained" color="primary" onClick={handleSaveFullName} className="mt-4">Save Details</Button>            
+        <>
+            {loading ? (
+                <Loader />
+            ) : (
+                <div className='flex justify-center w-full px-[5rem] py-[3rem]'>
+                    <div className='w-full flex flex-col gap-[1rem]'>
+                        <Typography variant="h4" sx={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 'bold', color: '#111' }}>My Details</Typography>
+                        <Paper className="px-6 py-4 border-[1px] border-lightGray3">
+                            <TextField
+                                    label="Full Name"
+                                    name="fullname"
+                                    value={fullname}
+                                    onChange={handleFullNameChange}
+                                    fullWidth
+                                    margin="normal"
+                                />              
+                                <Typography variant="h6" sx={{ fontFamily: 'Montserrat, sans-serif', fontSize: '17px', fontWeight: 600 }}>Email: {email}</Typography>
+                            {accountAge && (
+                                <Typography variant="h6" sx={{ fontFamily: 'Montserrat, sans-serif', fontSize: '17px', fontWeight: 600 }}>
+                                Account Age: {accountAge.years} years, {accountAge.months} months, {accountAge.days} days
+                                </Typography>
+                            )}
+                            { fullnameChanged && (
+                                <Button variant="contained" color="primary" onClick={handleSaveFullName} sx={{ mt: '13px' }}>Save Details</Button>            
 
-              )
+                            )
 
-              }
-              </Paper>
-            <Typography variant="h6">Modify Address:</Typography>
-            <FormControl fullWidth margin="normal">
-                <InputLabel>Select an Address</InputLabel>
-                <Select
-                    value={selectedAddressId}
-                    onChange={(e) => setSelectedAddressId(e.target.value)}
-                >
-                    {deliveryAddresses.map((address) => (
-                        <MenuItem key={address.id} value={address.id}>
-                            {address.address}
-                        </MenuItem>
-                    ))}
-                </Select>
-            </FormControl>
-            {isEditing && (
-                <form>
-                    <TextField
-                        label="Full Name"
-                        name="fullname"
-                        value={formValues.fullname}
-                        onChange={handleInputChange}
-                        fullWidth
-                        margin="normal"
-                    />
-                    <TextField
-                        label="Phone Number"
-                        name="mobile_number"
-                        value={formValues.mobile_number}
-                        onChange={handleInputChange}
-                        fullWidth
-                        margin="normal"
-                    />
-                    <TextField
-                        label="Alternate Phone Number"
-                        name="alternate_phone_number"
-                        value={formValues.alternate_phone_number}
-                        onChange={handleInputChange}
-                        fullWidth
-                        margin="normal"
-                    />
-                    <TextField
-                        label="Pincode"
-                        name="pincode"
-                        value={formValues.pincode}
-                        onChange={handleInputChange}
-                        fullWidth
-                        margin="normal"
-                    />
-                    <TextField
-                        label="State"
-                        name="state"
-                        value={formValues.state}
-                        onChange={handleInputChange}
-                        fullWidth
-                        margin="normal"
-                    />
-                    <TextField
-                        label="City"
-                        name="city"
-                        value={formValues.city}
-                        onChange={handleInputChange}
-                        fullWidth
-                        margin="normal"
-                    />
-                    <TextField
-                        label="Landmark"
-                        name="landmark"
-                        value={formValues.landmark}
-                        onChange={handleInputChange}
-                        fullWidth
-                        margin="normal"
-                    />
-                    <TextField
-                        label="Address"
-                        name="address"
-                        value={formValues.address}
-                        onChange={handleInputChange}
-                        fullWidth
-                        margin="normal"
-                    />
-                    <div>
-                        <Button variant="contained" color="primary" onClick={handleSave}>
-                            Save
-                        </Button>
-                        <Button variant="contained" onClick={handleBack} style={{ marginLeft: '10px' }}>
-                            Back
-                        </Button>
+                            }
+                        </Paper>
+                        <Typography variant="h5" sx={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 'bold', color: '#111', mt: '1rem' }}>Modify Address:</Typography>
+                        <FormControl fullWidth margin="normal">
+                            <InputLabel>Select an Address</InputLabel>
+                            <Select
+                                value={selectedAddressId}
+                                onChange={(e) => setSelectedAddressId(e.target.value)}
+                            >
+                                {deliveryAddresses.map((address) => (
+                                    <MenuItem key={address.id} value={address.id}>
+                                        {address.address}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                        {isEditing && (
+                            <form>
+                                <TextField
+                                    label="Full Name"
+                                    name="fullname"
+                                    value={formValues.fullname}
+                                    onChange={handleInputChange}
+                                    fullWidth
+                                    margin="normal"
+                                />
+                                <TextField
+                                    label="Phone Number"
+                                    name="mobile_number"
+                                    value={formValues.mobile_number}
+                                    onChange={handleInputChange}
+                                    fullWidth
+                                    margin="normal"
+                                />
+                                <TextField
+                                    label="Alternate Phone Number"
+                                    name="alternate_phone_number"
+                                    value={formValues.alternate_phone_number}
+                                    onChange={handleInputChange}
+                                    fullWidth
+                                    margin="normal"
+                                />
+                                <TextField
+                                    label="Pincode"
+                                    name="pincode"
+                                    value={formValues.pincode}
+                                    onChange={handleInputChange}
+                                    fullWidth
+                                    margin="normal"
+                                />
+                                <TextField
+                                    label="State"
+                                    name="state"
+                                    value={formValues.state}
+                                    onChange={handleInputChange}
+                                    fullWidth
+                                    margin="normal"
+                                />
+                                <TextField
+                                    label="City"
+                                    name="city"
+                                    value={formValues.city}
+                                    onChange={handleInputChange}
+                                    fullWidth
+                                    margin="normal"
+                                />
+                                <TextField
+                                    label="Landmark"
+                                    name="landmark"
+                                    value={formValues.landmark}
+                                    onChange={handleInputChange}
+                                    fullWidth
+                                    margin="normal"
+                                />
+                                <TextField
+                                    label="Address"
+                                    name="address"
+                                    value={formValues.address}
+                                    onChange={handleInputChange}
+                                    fullWidth
+                                    margin="normal"
+                                />
+                                <div className='mt-[1.5rem]'>
+                                    <Button variant="contained" color="primary" onClick={handleSave}>
+                                        Save
+                                    </Button>
+                                    <Button variant="contained" onClick={handleBack} style={{ marginLeft: '10px' }}>
+                                        Back
+                                    </Button>
+                                </div>
+                            </form>
+                        )}
                     </div>
-                </form>
+                </div>
             )}
-        </div>
+        </>
     );
 };
 
