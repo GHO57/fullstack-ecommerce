@@ -17,8 +17,8 @@ const ProductCard = ({ product }) => {
     const navigate = useNavigate()
   
     const { loading, isAuthenticated } = useSelector((state) => state.user);
-    const { cartLoading } = useSelector((state) => state.cart)
-    const {wishlist} = useSelector((state) => state.wishlist)
+    const { cartLoading, cart } = useSelector((state) => state.cart)
+    const {wishlistLoading, wishlist} = useSelector((state) => state.wishlist)
   
     // const [productCardHovered, setProductCardHovered] = useState(null)
 
@@ -38,14 +38,18 @@ const ProductCard = ({ product }) => {
       dispatch(addToWishlist(product_id))
   }
     
-      const handleAddtoCart = (product_id) => {
-        if(isAuthenticated){
-          dispatch(addToCart(product_id))
-          navigate('/cart')
-        }else{
-          toast.error("Login to add products to the cart")
-        }
-      }
+  const handleAddtoCart = (product_id) => {
+    if(isAuthenticated){
+      dispatch(addToCart(product_id))
+      navigate('/cart')
+    }else{
+      toast.error("Login to add products to the cart")
+    }
+  }
+
+  const handleGotoCart = () => {
+    navigate("/cart")
+  }
 
   return (
     <>
@@ -56,15 +60,23 @@ const ProductCard = ({ product }) => {
         className="relative flex flex-col bg-white w-[280px] h-fit shadow-lg border-[1px] border-lightGray3 rounded-[7px]"
       >
         {wishlist.find((item) => item.id === product.id) ? (
-            <FavoriteIcon 
-            onClick={() => {handleRemoveWishlistProduct(product.id)}}  
-            className="absolute top-[12px] right-[12px] text-primary cursor-pointer hover:text-secondary"
-            />
+            <button
+              disabled={wishlistLoading} 
+            >
+              <FavoriteIcon
+                onClick={() => {handleRemoveWishlistProduct(product.id)}}  
+                className="absolute top-[12px] right-[12px] text-primary cursor-pointer hover:text-secondary"
+              />
+            </button>
         ) : (                          
-            <FavoriteBorderIcon
-            onClick={() => {handleAddToWishlist(product.id)}}
-            className='absolute top-[12px] right-[12px] hover:text-primary cursor-pointer'
-            />
+            <button
+              disabled={wishlistLoading}
+            >
+              <FavoriteBorderIcon
+                onClick={() => {handleAddToWishlist(product.id)}}
+                className='absolute top-[12px] right-[12px] hover:text-primary cursor-pointer'
+              />
+            </button>
         )}
         <Link className="flex-center p-[2rem]" to={`/product/${product.id}`}>
           <img
@@ -100,22 +112,45 @@ const ProductCard = ({ product }) => {
             </p>
           </div>
         </div>
-        <button
-          onClick={() => handleAddtoCart(product.id)}
-          disabled={cartLoading}
-        //   className={`absolute bottom-0 left-0 right-0 rounded-[0_0_3px_3px] bg-black h-[50px] text-white text-[13px] hover:bg-darkGray font-medium transition-all duration-50 
-        //     ${productCardHovered === product.id ? "opacity-1" : "opacity-0"}
-        //   `}
-        className={`absolute bottom-0 left-0 right-0 rounded-[0_0_7px_7px] bg-black h-[55px] text-white text-[13px] hover:bg-darkGray font-medium transition-all duration-50 
-        `}
-        >
-          {/* {cartLoading ? (
-            <ButtonLoader width={20} height={20} />
+        {product.stock === 0 && ( 
+          <button
+            disabled={true}
+            className={`absolute bottom-0 left-0 right-0 rounded-[0_0_7px_7px] bg-secondary disabled:bg-[#ffa1a1] h-[55px] text-white text-[13px] font-medium cursor-default 
+          `}
+          >
+            Out of Stock
+          </button>
+        )}
+
+        {product.stock > 0 && (
+          !cart.find((p) => p.id === product.id) ? (
+            <button
+              onClick={() => handleAddtoCart(product.id)}
+              disabled={cartLoading}
+              className={`absolute bottom-0 left-0 right-0 rounded-[0_0_7px_7px] bg-black h-[55px] text-white text-[13px] hover:bg-darkGray font-medium transition-all duration-50 
+            `}
+            >
+              {cartLoading ? (
+                <ButtonLoader width={20} height={20} />
+              ) : (
+                <>Add to Cart</>
+              )}
+            </button>
           ) : (
-            <>Add to Cart</>
-          )} */}
-          Add to Cart
-        </button>
+            <button
+              onClick={() => handleGotoCart()}
+              disabled={cartLoading}
+              className={`absolute bottom-0 left-0 right-0 rounded-[0_0_7px_7px] bg-black h-[55px] text-white text-[13px] hover:bg-darkGray font-medium transition-all duration-50 
+            `}
+            >
+              {cartLoading ? (
+                <ButtonLoader width={20} height={20} />
+              ) : (
+                <>Go to Cart</>
+              )}
+            </button>
+          )
+        )}
       </div>
     </>
   );

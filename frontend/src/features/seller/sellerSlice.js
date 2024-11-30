@@ -14,7 +14,9 @@ import {
     getAllOrdersBySellerId,
     getOrderItemsBySellerId,
     updateOrderItemStatus,
-    getSellerOrders
+    getSellerOrders,
+    getSellerProducts,
+    getSellerDeletedProducts
 } from './sellerThunks'
 
 const initialState = {
@@ -28,6 +30,7 @@ const initialState = {
     isSellerAuthenticated: false,
     sellerMessage: null,
     sellerError: null,
+    orderDeliveryAddress: [],
     orders: [],
     stats: {
         totalSales: 0,
@@ -329,6 +332,72 @@ const sellerSlice = createSlice({
                 }
             })
 
+            //get all seller products pending
+            
+            .addCase(getSellerProducts.pending, (state) => {
+                return{
+                    ...state,
+                    sellerLoading: true,
+                    sellerProducts: [],
+                    sellerMessage: null,
+                    sellerError: null
+                }
+            })
+
+            //get all seller products fulfilled
+
+            .addCase(getSellerProducts.fulfilled, (state, action) => {
+                return{
+                    ...state,
+                    sellerLoading: false,
+                    sellerProducts: action.payload.products,
+                }
+            })
+
+            //get all seller products rejected
+
+            .addCase(getSellerProducts.rejected, (state, action) => {
+                return{
+                    ...state,
+                    sellerLoading: false,
+                    sellerProducts: [],
+                }
+            })
+
+            //get all seller deleted products pending
+            
+            .addCase(getSellerDeletedProducts.pending, (state) => {
+                return{
+                    ...state,
+                    sellerLoading: true,
+                    sellerDeletedProducts: [],
+                    sellerMessage: null,
+                    sellerError: null
+                }
+            })
+
+            //get all seller deleted products fulfilled
+
+            .addCase(getSellerDeletedProducts.fulfilled, (state, action) => {
+                return{
+                    ...state,
+                    sellerLoading: false,
+                    sellerDeletedProducts: action.payload.deletedProducts,
+                }
+            })
+
+            //get all seller deleted products rejected
+
+            .addCase(getSellerDeletedProducts.rejected, (state, action) => {
+                return{
+                    ...state,
+                    sellerLoading: false,
+                    sellerDeletedProducts: [],
+                }
+            })
+
+
+
             //get product details pending
             .addCase(getProductDetails.pending, (state) => {
                 return{
@@ -368,6 +437,7 @@ const sellerSlice = createSlice({
                     sellerLoading: true,
                     allSellerOrders: [],
                     sellerOrderItems: [],
+                    orderDeliveryAddress: [],
                     sellerMessage: null,
                     sellerError: null
                 }
@@ -388,6 +458,7 @@ const sellerSlice = createSlice({
                     ...state, 
                     sellerLoading: false,
                     allSellerOrders: [],
+                    orderDeliveryAddress: []
                 }
             })
 
@@ -397,6 +468,7 @@ const sellerSlice = createSlice({
                     ...state, 
                     sellerLoading: true,
                     sellerOrderItems: [],
+                    orderDeliveryAddress: [],
                     sellerMessage: null,
                     sellerError: null
                 }
@@ -408,6 +480,7 @@ const sellerSlice = createSlice({
                     ...state, 
                     sellerLoading: false,
                     sellerOrderItems: action.payload.orderItems || [],
+                    orderDeliveryAddress: action.payload.deliveryAddress || []
                 }
             })
             
@@ -417,6 +490,7 @@ const sellerSlice = createSlice({
                     ...state, 
                     sellerLoading: false,
                     sellerOrderItems: [],
+                    orderDeliveryAddress: [],
                 }
             })
 

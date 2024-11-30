@@ -81,39 +81,43 @@ exports.loginsignup = catchAsyncErrors(async(req, res, next) => {
         return next(new errorHandler("Enter the email", 400))
     }
 
-    const [db_otp] = await pool.execute('SELECT otp FROM userotps WHERE email = ?', [email])
+    try{
+        const [db_otp] = await pool.execute('SELECT otp FROM userotps WHERE email = ?', [email])
 
-    if(parseInt(otp) === db_otp[0].otp){
-        const [existingUser] = await pool.execute('SELECT * FROM users WHERE email = ?', [email])
-        
-        if(existingUser.length > 0 && existingUser[0].fullname !== null){
+        if(parseInt(otp) === db_otp[0].otp){
+            const [existingUser] = await pool.execute('SELECT * FROM users WHERE email = ?', [email])
             
-            const [cart] = await pool.execute('SELECT id FROM carts WHERE user_id = ?', [existingUser[0].id])
+            if(existingUser.length > 0 && existingUser[0].fullname !== null){
+                
+                const [cart] = await pool.execute('SELECT id FROM carts WHERE user_id = ?', [existingUser[0].id])
+                
+                sendToken(existingUser, cart[0].id, 201, res)
             
-            sendToken(existingUser, cart[0].id, 201, res)
-        
-        }else if(existingUser.length === 0){
-            
-            const uuid = generate_uuid()
-            
-            await pool.execute('INSERT INTO users (id, email) VALUES(?, ?)', [uuid, email])
+            }else if(existingUser.length === 0){
+                
+                const uuid = generate_uuid()
+                
+                await pool.execute('INSERT INTO users (id, email) VALUES(?, ?)', [uuid, email])
 
-            const [newUser] = await pool.execute('SELECT * FROM users WHERE email = ?', [email])
+                const [newUser] = await pool.execute('SELECT * FROM users WHERE email = ?', [email])
 
-            res.status(201).json({
-                success: true,
-                message: "user created without fullname",
-                newUser
-            })
+                res.status(201).json({
+                    success: true,
+                    message: "user created without fullname",
+                    newUser
+                })
+            }else{
+                res.status(200).json({
+                    success: true,
+                    message: "user exists without fullname",
+                    newUser: existingUser
+                })
+            }
         }else{
-            res.status(200).json({
-                success: true,
-                message: "user exists without fullname",
-                newUser: existingUser
-            })
+            return next(new errorHandler("Invalid OTP", 400))
         }
-    }else{
-        return next(new errorHandler("Invalid OTP", 400))
+    }catch(error){
+        return next(new errorHandler("Something went wrong", 500))
     }
 })
 
@@ -133,22 +137,38 @@ exports.signupNewUser = catchAsyncErrors(async(req, res, next) => {
     const trimmedFullname = fullname.trim()
     const validation = validateFullname(trimmedFullname)
 
-    try{
-        if(validation){            
-            await pool.execute('UPDATE users SET fullname = ? WHERE email = ?', [trimmedFullname, email])
-            
-            const [user] = await pool.execute('SELECT * FROM users WHERE email = ?', [email])
-            
-            const cartId = generate_uuid()
-        
-            await pool.execute('INSERT INTO carts (id, user_id) VALUES (? ,?)', [cartId, user[0].id])    
+    if(!validation){
+        return next(new errorHandler(`Invalid Full name`, 400))
+    }   
     
-            sendToken(user, cartId, 201, res)
-        }else{
-            return next(new errorHandler(`Invalid Full name`, 400))
-        }
+    let connection
+
+    try{
+
+        connection = await pool.getConnection()
+        await connection.beginTransaction()
+
+        await connection.execute('UPDATE users SET fullname = ? WHERE email = ?', [trimmedFullname, email])
+        
+        const [user] = await connection.execute('SELECT * FROM users WHERE email = ?', [email])
+        
+        const cartId = generate_uuid()
+    
+        await connection.execute('INSERT INTO carts (id, user_id) VALUES (? ,?)', [cartId, user[0].id])    
+
+        await connection.commit()
+
+        sendToken(user, cartId, 201, res)
+
     }catch(err){
+        if(connection){
+            await connection.rollback()
+        }
         return next(new errorHandler(`Something Went Wrong`, 500))
+    }finally{
+        if (connection) {
+            connection.release();
+        }
     }
 
 })
@@ -334,7 +354,6 @@ exports.getOrderItems = catchAsyncErrors(async(req, res, next) => {
 
     try{
         const [orderItems] = await pool.execute('SELECT oi.id, oi.order_id, oi.product_id, oi.seller_id, oi.quantity, oi.price, oi.mrp, oi.product_status, p.image_url, p.name FROM order_items oi, products p WHERE oi.product_id = p.id AND order_id = ?', [order_id])
-
         if(orderItems.length > 0){
             res.status(200).json({
                 success: true,

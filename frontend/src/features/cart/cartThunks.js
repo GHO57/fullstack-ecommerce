@@ -86,3 +86,19 @@ export const loadCart = createAsyncThunk('cart/load', async(thunkAPI) => {
         }
     }
 })
+
+//validate cart items
+
+export const validateCart = createAsyncThunk("cart/validate", async(thunkAPI) => {
+    try{
+        const { data } = await axios.post("/api/v1/user/cart/validate")
+
+        return data
+    }catch(error){
+        if(error.response){
+            return thunkAPI.rejectWithValue(error.response.data)
+        }else{
+            return thunkAPI.rejectWithValue({ message: error.message })
+        }
+    }
+})

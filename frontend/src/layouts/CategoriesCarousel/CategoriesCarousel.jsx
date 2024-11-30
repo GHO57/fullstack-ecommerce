@@ -40,7 +40,7 @@ const CategoriesCarousel = () => {
         }
         .slick-prev{
             top: -55px;
-            left: 1170px;
+            left: 1100px;
         }
         .slick-next{
             top: -55px;
@@ -70,13 +70,51 @@ const CategoriesCarousel = () => {
     };
 
     const settings = {
-    dots: false,
-    infinite: false,
-    speed: 500,
-    slidesToShow: 7,
-    slidesToScroll: 3,
-    initialSlide: 0,
+        dots: false,
+        infinite: false,
+        speed: 500,
+        slidesToShow: 7,
+        slidesToScroll: 3,
+        initialSlide: 0,
+        responsive: [
+            {
+                breakpoint: 1280, // For screens smaller than 1280px
+                settings: {
+                    slidesToShow: 6,
+                    slidesToScroll: 2,
+                },
+            },
+            {
+                breakpoint: 1024, // For screens smaller than 1024px
+                settings: {
+                    slidesToShow: 4,
+                    slidesToScroll: 2,
+                },
+            },
+            {
+                breakpoint: 768, // For screens smaller than 768px
+                settings: {
+                    slidesToShow: 3,
+                    slidesToScroll: 2,
+                },
+            },
+            {
+                breakpoint: 640, // For screens smaller than 640px
+                settings: {
+                    slidesToShow: 2,
+                    slidesToScroll: 1,
+                },
+            },
+            {
+                breakpoint: 480, // For screens smaller than 480px
+                settings: {
+                    slidesToShow: 2,
+                    slidesToScroll: 1,
+                },
+            },
+        ],
     };
+    
 
     
   return (
@@ -91,7 +129,7 @@ const CategoriesCarousel = () => {
                         <p className="text-[30px] mb-[0.5rem]">{iconMap[category.icon]}</p>
                     </div>
                     <div className="flex-center">
-                        <p className="font-semibold text-[12px]">{category.name}</p>
+                        <p className="font-semibold text-[12px] text-nowrap">{category.name}</p>
                     </div>
                 </Link>
             ))}

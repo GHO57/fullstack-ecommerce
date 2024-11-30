@@ -11,6 +11,7 @@ import { Loader } from '../../../layouts';
 import { categories } from '../data';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import ProductCard from '../../../layouts/ProductCard/ProductCard';
+import { getAllProducts } from '../../../features/products/productsThunks';
 
 const ITEM_HEIGHT = 48; 
 const ITEM_PADDING_TOP = 8;
@@ -35,62 +36,65 @@ const MenuProps = {
 
 const Products = () => {
 
+    const dispatch = useDispatch()
+
     const { search_term } = useParams()
 
-    const { productLoading, productDetails, products } = useSelector((state) => state.products)
+    const { productLoading, products, pagination  } = useSelector((state) => state.products)
     const { loading, isAuthenticated } = useSelector((state) => state.user);
   
+    const [sortBy, setSortBy] = useState('')
     const [sortValue, setSortValue] = useState('')
+    const [sortOrder, setSortOrder] = useState('')
     const [categoryName, setCategoryName] = useState([])
     const [currentPage, setCurrentPage] = useState(1);
     const productsPerPage = 12;
   
-      const handleSortValueChange = (e) => {
-        setSortValue(e.target.value)
-      }
+    const handleSortValueChange = (e) => {
+        switch(e.target.value){
+            case 'price_low_to_high' : 
+                setSortValue(e.target.value)
+                setSortBy('price')
+                setSortOrder('asc')
+                break;
+            case 'price_high_to_low' :
+                setSortValue(e.target.value)
+                setSortBy('price')
+                setSortOrder('desc')
+                break
+            default :
+                setSortValue('')
+                setSortBy('')
+                setSortOrder('')
+                break
+        }
+    }
 
       const handleCategoryNameChange = (event) => {
         setCategoryName(event.target.value);
       }
     
-      const sortProducts = (products, sortValue) => {
-        switch (sortValue) {
-            case 'L2H':
-                return [...products].sort((a, b) => a.price - b.price);
-            case 'H2L':
-                return [...products].sort((a, b) => b.price - a.price);
-            default:
-                return products;
+      const fetchProducts = () => {
+        const params = {
+            page: currentPage,
+            limit: productsPerPage,
+            sortBy: sortBy,
+            sortOrder: sortOrder,
+            category: categoryName,
+            searchTerm: search_term
         }
-    };
-    
-        const filterProducts = (products, categories, searchTerm) => {
-        
-            return products.filter(product => {
-                const matchesCategory = categories.length === 0 || categories.includes(product.category)
-                const matchesSearchTerm = product.name.toLowerCase().includes(searchTerm.toLowerCase())
-
-                return matchesCategory && matchesSearchTerm
-            })
-        }
-    
-        const sortedAndFilteredProducts = useMemo(() => {
-            return sortProducts(filterProducts(products, categoryName, search_term ? search_term : ''), sortValue);
-        }, [products, categoryName, sortValue, search_term]) 
+        dispatch(getAllProducts(params))
+      }
 
       useEffect(() => {
+        fetchProducts()
         window.scrollTo(0, 0);
-      }, []);
+      }, [dispatch, currentPage, productsPerPage, sortBy, sortOrder, categoryName, search_term]);
 
       const handleChangePage = (event, value) => {
         setCurrentPage(value);
         window.scrollTo(0, 0);
       };
-    
-      const indexOfLastProduct = currentPage * productsPerPage;
-      const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
-      const currentProducts = sortedAndFilteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
- 
  
     return (
     <>
@@ -138,21 +142,31 @@ const Products = () => {
                                     <MenuItem value="">
                                         <em>None</em>
                                     </MenuItem>
-                                    <MenuItem value="L2H">Lowest to Highest Price</MenuItem>
-                                    <MenuItem value="H2L">Highest to Lowest Price</MenuItem>
+                                    <MenuItem value="price_low_to_high">Lowest to Highest Price</MenuItem>
+                                    <MenuItem value="price_high_to_low">Highest to Lowest Price</MenuItem>
                                 </Select>
                             </FormControl>
                         </div>
                         <div className="flex-center w-full gap-[4rem]">
-                            <div className="grid grid-cols-4 gap-[2rem]">
-                            {currentProducts.map((product) => (
-                                <ProductCard product={product}/>
-                            ))}
+                            <div className={`${products.length > 0 ? "grid grid-cols-4 gap-[2rem]" : "flex-center"}`}>
+                            {products.length > 0 ? (
+                                    <>
+                                        {products.map((product, index) => (
+                                            <ProductCard product={product}/>
+                                        ))}
+                                    </>
+                                ) : (
+                                    <>
+                                        <div className='flex w-full text-center text-[35px] font-bold my-[5rem]'>
+                                            <h3>We couldn't find the product you're looking for!</h3>
+                                        </div>
+                                    </>
+                                )}
                             </div>
                         </div>
                         <div className='flex-center w-full mt-[2rem]'>
                             <Pagination
-                                count={Math.ceil(sortedAndFilteredProducts.length / productsPerPage)}
+                                count={Math.ceil(pagination.totalCount / productsPerPage)}
                                 page={currentPage}
                                 onChange={handleChangePage}
                                 color="primary"

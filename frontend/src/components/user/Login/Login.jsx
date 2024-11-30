@@ -50,12 +50,7 @@ const Login = ({ trigger, setTrigger }) => {
         verifyForm.set("email", tempEmail)
         verifyForm.set("otp", OTP)
 
-        dispatch(loginsignup(verifyForm)).then(() => {
-            dispatch(loadCart())
-            window.location.reload()
-            navigate('/')
-        })
-
+        dispatch(loginsignup(verifyForm))
     }
 
     const handleFullNameSubmit = async(event) => {
@@ -97,8 +92,9 @@ const Login = ({ trigger, setTrigger }) => {
         if(isAuthenticated && isLoggingIn){
             setTrigger(false)
             navigate("/")
+            window.location.reload()
         }
-    }, [OTPSent, newUser, isAuthenticated])
+    }, [OTPSent, newUser, isAuthenticated, isLoggingIn])
 
 
   return (

@@ -81,6 +81,7 @@ exports.getAdminDetails = catchAsyncErrors(async(req, res, next) => {
             return next(new errorHandler("Admin not found", 404))
         }
     }catch(err){
+        console.log(err)
         return next(new errorHandler("Something went wrong", 500))
     }
 })
@@ -200,33 +201,54 @@ exports.addNewAdmin = catchAsyncErrors(async(req, res, next) => {
         return next(new errorHandler("Enter all the required inputs", 400))
     }
 
-    const [existingAdmin] = await pool.execute('SELECT * FROM admins WHERE email = ?', [email])
+    let connection
 
-    if(existingAdmin.length > 0){
-        return next(new errorHandler("Admin already exist", 400))
-    }else{
-        const uuid = generate_uuid()
-        const password = generateRandomPassword(20)
-        const message = `You have been added as ${role}
-                           path: /admin/login
-                           password: ${password}
-                        `
-        await pool.execute('INSERT INTO admins (id, fullname, role, email, password) VALUES(?, ?, ?, ?, ?)', [uuid, fullname, role, email, password])
-        const [adminUser] = await pool.execute('SELECT * FROM admins WHERE id = ?', [uuid])
+    try{
 
-        try{
-            await sendEmail({
-                email,
-                subject: "Admin password",
-                message
-            })
-            res.status(200).json({
-                success: true,
-                message: `New ${role} added and email sent successfully`,
-                adminUser: adminUser[0]
-            })
-        }catch(err){
-            return next(new errorHandler("Something went wrong", 500))
+        connection = await pool.getConnection()
+        await connection.beginTransaction()
+
+        const [existingAdmin] = await connection.execute('SELECT * FROM admins WHERE email = ?', [email])
+
+        if(existingAdmin.length > 0){
+            return next(new errorHandler("Admin already exist", 400))
+        }else{
+            const uuid = generate_uuid()
+            const password = generateRandomPassword(20)
+            const message = `You have been added as ${role}
+                               path: /admin/login
+                               password: ${password}
+                            `
+            await connection.execute('INSERT INTO admins (id, fullname, role, email, password) VALUES(?, ?, ?, ?, ?)', [uuid, fullname, role, email, password])
+            const [adminUser] = await connection.execute('SELECT * FROM admins WHERE id = ?', [uuid])
+    
+            try{
+                await sendEmail({
+                    email,
+                    subject: "Admin password",
+                    message
+                })
+
+                await connection.commit()
+
+                res.status(200).json({
+                    success: true,
+                    message: `New ${role} added and email sent successfully`,
+                    adminUser: adminUser[0]
+                })
+            }catch(err){
+                await connection.rollback()
+                return next(new errorHandler("Something went wrong", 500))
+            }
+        }
+    }catch(error){
+        if(connection){
+            await connection.rollback()
+        }
+        return next(new errorHandler("Something went wrong", 500))
+    }finally{
+        if(connection){
+            connection.release()
         }
     }
 })
@@ -240,18 +262,22 @@ exports.deleteAdmin = catchAsyncErrors(async(req, res, next) => {
         return next(new errorHandler("Enter the id.", 400))
     }
 
-    const [admin] = await pool.execute('SELECT * FROM admins WHERE id = ?', [admin_id])
+    try{
+        const [admin] = await pool.execute('SELECT * FROM admins WHERE id = ?', [admin_id])
 
-    if(admin.length > 0){
-        await pool.execute('DELETE FROM admins WHERE id = ?', [admin_id])
+        if(admin.length > 0){
+            await pool.execute('DELETE FROM admins WHERE id = ?', [admin_id])
 
-        res.status(200).json({
-            success: true,
-            message: "Admin successfully deleted",
-            adminId: admin_id
-        })
-    }else{
-        return next(new errorHandler("Admin doesn't exist", 404))
+            res.status(200).json({
+                success: true,
+                message: "Admin successfully deleted",
+                adminId: admin_id
+            })
+        }else{
+            return next(new errorHandler("Admin doesn't exist", 404))
+        }
+    }catch(error){
+        return next(new errorHandler("Something went wrong", 500))
     }
 })
 
@@ -264,20 +290,39 @@ exports.deleteUser = catchAsyncErrors(async(req, res, next) => {
         return next(new errorHandler("Enter the id", 400))
     }
 
-    const [user] = await pool.execute('SELECT u.id as userId, u.fullname, u.email, c.id as cartId FROM users u, carts c WHERE c.user_id = u.id && u.id = ?', [user_id])
+    let connection
 
-    if(user.length > 0){
-        await pool.execute('DELETE FROM cart_items WHERE cart_id = ?', [user[0].cartId])
-        await pool.execute('DELETE FROM carts WHERE user_id = ?', [user[0].userId])
-        await pool.execute('DELETE FROM users WHERE id = ?', [user[0].userId])
+    try{
+        connection = await pool.getConnection()
+        await connection.beginTransaction()
 
-        res.status(200).json({
-            success: true,
-            message: "User successfully deleted",
-            userId: user_id
-        })
-    }else{
-        return next(new errorHandler('User doesn\'t exist', 404))
+        const [user] = await connection.execute('SELECT u.id as userId, u.fullname, u.email, c.id as cartId FROM users u, carts c WHERE c.user_id = u.id && u.id = ?', [user_id])
+
+        if(user.length > 0){
+            await connection.execute('DELETE FROM cart_items WHERE cart_id = ?', [user[0].cartId])
+            await connection.execute('DELETE FROM carts WHERE user_id = ?', [user[0].userId])
+            await connection.execute('DELETE FROM users WHERE id = ?', [user[0].userId])
+
+            await connection.commit()
+
+            res.status(200).json({
+                success: true,
+                message: "User successfully deleted",
+                userId: user_id
+            })
+        }else{
+            await connection.rollback()
+            return next(new errorHandler('User doesn\'t exist', 404))
+        }
+    }catch(error){
+        if(connection){
+            await connection.rollback()
+        }
+        return next(new errorHandler("Something went wrong", 500))
+    }finally{
+        if(connection){
+            connection.release()
+        }
     }
 })
 
@@ -290,19 +335,38 @@ exports.deleteSeller = catchAsyncErrors(async(req, res, next) => {
         return next(new errorHandler("Enter the id", 400))
     }
 
-    const [seller] = await pool.execute('SELECT * FROM sellers WHERE id = ?', [seller_id])
+    let connection
+    
+    try{
+        connection = await pool.getConnection()
+        await connection.beginTransaction()
 
-    if(seller.length > 0){
-        await pool.execute('DELETE FROM products WHERE seller_id = ?', [seller_id])
-        await pool.execute('DELETE FROM sellers WHERE id = ?', [seller_id])
+        const [seller] = await connection.execute('SELECT * FROM sellers WHERE id = ?', [seller_id])
 
-        res.status(200).json({
-            success: true,
-            message: "Seller successfully deleted",
-            sellerId: seller_id
-        })
-    }else{
-        return next(new errorHandler('Seller doesn\'t exist', 404))
+        if(seller.length > 0){
+            await connection.execute('DELETE FROM products WHERE seller_id = ?', [seller_id])
+            await connection.execute('DELETE FROM sellers WHERE id = ?', [seller_id])
+
+            await connection.commit()
+
+            res.status(200).json({
+                success: true,
+                message: "Seller successfully deleted",
+                sellerId: seller_id
+            })
+        }else{
+            await connection.rollback()
+            return next(new errorHandler('Seller doesn\'t exist', 404))
+        }
+    }catch(error){
+        if(connection){
+            await connection.rollback()
+        }
+        return next(new errorHandler(`Something went wrong ${error}`, 500))
+    }finally{
+        if(connection){
+            connection.release()
+        }
     }
 })
 
@@ -317,13 +381,18 @@ exports.approveSeller = catchAsyncErrors(async(req, res, next) => {
         return next(new errorHandler("Enter all the required details", 400))
     }
 
+    let connection
+
     try{
-        const [existingSeller] = await pool.execute('SELECT * FROM sellers WHERE gstin = ? || email = ?', [gstin, email]) 
+        connection = await pool.getConnection()
+        await connection.beginTransaction()
+
+        const [existingSeller] = await connection.execute('SELECT * FROM sellers WHERE gstin = ? || email = ?', [gstin, email]) 
 
         if(existingSeller.length > 0){
             return next(new errorHandler("Seller Already Approved", 400))
         }else{
-            const [appliedSeller] = await pool.execute('SELECT * FROM seller_applications WHERE gstin = ? && email= ?', [gstin, email])
+            const [appliedSeller] = await connection.execute('SELECT * FROM seller_applications WHERE gstin = ? && email= ?', [gstin, email])
             if(appliedSeller.length > 0){
                 const uuid = generate_uuid()
                 const password = generateRandomPassword(20)
@@ -332,8 +401,8 @@ exports.approveSeller = catchAsyncErrors(async(req, res, next) => {
                                    email: your_email
                                    password: ${password}
                                 `
-                await pool.execute('DELETE FROM seller_applications WHERE gstin = ? && email = ?', [gstin, email])
-                await pool.execute('INSERT INTO sellers (id, full_name, email, password, company_name, company_address, gstin) VALUES (?, ?, ?, ?, ?, ?, ?)',[uuid, appliedSeller[0].full_name, appliedSeller[0].email, password, appliedSeller[0].company_name, appliedSeller[0].company_address, appliedSeller[0].gstin])
+                await connection.execute('DELETE FROM seller_applications WHERE gstin = ? && email = ?', [gstin, email])
+                await connection.execute('INSERT INTO sellers (id, full_name, email, password, company_name, company_address, gstin) VALUES (?, ?, ?, ?, ?, ?, ?)',[uuid, appliedSeller[0].full_name, appliedSeller[0].email, password, appliedSeller[0].company_name, appliedSeller[0].company_address, appliedSeller[0].gstin])
 
                 try{
                     await sendEmail({
@@ -341,21 +410,32 @@ exports.approveSeller = catchAsyncErrors(async(req, res, next) => {
                         subject: "SELLER APPROVED",
                         message
                     })
+
+                    await connection.commit()
+                    
                     res.status(200).json({
                         success: true,
                         message: `Seller approved and email sent successfully`,
                         applicationId: appliedSeller[0].id
                     })
                 }catch(err){
+                    await connection.rollback()
                     return next(new errorHandler(err.message, 500))
                 }
             }else{
+                await connection.rollback()
                 return next(new errorHandler("Seller didn't apply", 400))
             }
-            
         }
     }catch(error){
+        if(connection){
+            await connection.rollback()
+        }
         return next(new errorHandler(`Something went wrong`, 500))
+    }finally{
+        if(connection){
+            connection.release()
+        }
     }
 })
 
@@ -369,17 +449,22 @@ exports.rejectSeller = catchAsyncErrors(async(req, res, next) => {
         return next(new errorHandler("Enter all the required details", 400))
     }
 
+    let connection
+
     try{
-        const [existingSeller] = await pool.execute('SELECT * FROM sellers WHERE gstin = ? || email = ?', [gstin, email]) 
+        connection = await pool.getConnection()
+        await connection.beginTransaction()
+
+        const [existingSeller] = await connection.execute('SELECT * FROM sellers WHERE gstin = ? || email = ?', [gstin, email]) 
 
         if(existingSeller.length > 0){
             return next(new errorHandler("Seller Already Approved", 400))
         }else{
-            const [appliedSeller] = await pool.execute('SELECT * FROM seller_applications WHERE gstin = ? && email = ?', [gstin, email])
+            const [appliedSeller] = await connection.execute('SELECT * FROM seller_applications WHERE gstin = ? && email = ?', [gstin, email])
             if(appliedSeller.length > 0){
                 const message = `You're GSTIN is Invalid, please verify your GSTIN and reapply`
 
-                await pool.execute('DELETE FROM seller_applications WHERE gstin = ? && email = ?', [gstin, email])
+                await connection.execute('DELETE FROM seller_applications WHERE gstin = ? && email = ?', [gstin, email])
 
                 try{
                     await sendEmail({
@@ -387,23 +472,33 @@ exports.rejectSeller = catchAsyncErrors(async(req, res, next) => {
                         subject: "SELLER REJECTED",
                         message
                     })
+
+                    await connection.commit()
+
                     res.status(200).json({
                         success: true,
                         message: `Seller rejected and email sent successfully`,
                         applicationId: appliedSeller[0].id
                     })
                 }catch(err){
+                    await connection.rollback()
                     return next(new errorHandler(err.message, 500))
                 }
             }else{
+                await connection.rollback()
                 return next(new errorHandler("Seller didn't apply", 400))
             }
         }
     }catch(error){
+        if(connection){
+            await connection.rollback()
+        }
         return next(new errorHandler("Something went wrong", 500))
+    }finally{
+        if(connection){
+            connection.release()
+        }
     }
-
-
 })
 
 const getTotalRevenue = async () => {

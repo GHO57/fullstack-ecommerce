@@ -6,6 +6,12 @@ import {
 
 const initialState = {
     products: [],
+    pagination: {
+        totalCount: 0,
+        totalPages: 0,
+        currentPage: 1,
+        perPage: 10
+    },
     productDetails: [],
     productLoading: false,
     productMessage: null,
@@ -39,7 +45,13 @@ const productSlice = createSlice({
             .addCase(getAllProducts.fulfilled, (state, action) => {
                 return{
                     ...state,
-                    products: action.payload.allProducts,
+                    products: action.payload.allProducts || [],
+                    pagination: action.payload.pagination || {
+                        totalCount: 0,
+                        totalPages: 0,
+                        currentPage: 1,
+                        perPage: 10,
+                    },
                     productLoading: false,
                 }
             })
@@ -49,7 +61,8 @@ const productSlice = createSlice({
                 return{
                     ...state,
                     products: [],
-                    productLoading: false
+                    productLoading: false,
+                    productError: action.payload.message
                 }
             })
 

@@ -27,7 +27,7 @@ const SellerOrderItems = () => {
     const { order_id } = useParams()
 
   
-    const { sellerLoading, sellerOrderItems, allSellerOrders, sellerProducts } = useSelector((state) => state.seller)
+    const { sellerLoading, sellerOrderItems, orderDeliveryAddress, allSellerOrders, sellerProducts } = useSelector((state) => state.seller)
 
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -102,6 +102,22 @@ const SellerOrderItems = () => {
                     </div>
                     <div className='flex gap-[1rem]'>
                         <div className='flex-[2] flex flex-col gap-[1rem]'>
+                            {orderDeliveryAddress.map(addr => (
+                                <div className='bg-white shadow-md rounded-[4px] pb-[1.5rem] flex flex-col gap-[0.5rem] border-[1px] border-lightGray3'>
+                                    <h2 className='font-bold text-[16px] bg-primary rounded-[4px_4px_0_0] text-white px-[1.5rem] py-[1rem] mb-[0.3rem]'>Delivery Address</h2>
+                                    <div className='flex flex-col px-[1.5rem]'>
+                                        <div className='flex justify-between w-full relative'>
+                                            <h3 className='font-bold text-[17px] mb-[0.2rem]'>{addr.fullname}</h3>
+                                            <div className='flex flex-col absolute right-0 top-0'>
+                                                <p className='text-[15px] '>Primary : {addr.mobile_number}</p>
+                                                <p className='text-[15px] '>Alternative : {addr.alternate_phone_number}</p>
+                                            </div>
+                                        </div>
+                                        <p className='text-[15px] max-w-[700px]'>{addr.address}, {addr.landmark}</p>
+                                        <p className='text-[15px] max-w-[700px]'>{addr.city}, {addr.state}, India, {addr.pincode}</p>
+                                    </div>
+                                </div>
+                            ))}
                             {/* <div className='bg-white shadow-md rounded-[4px] p-[1.5rem] flex flex-col gap-[0.5rem] border-[1px] border-lightGray3'>
                                 <h2 className='font-semibold text-[18px] border-b-[1px] border-b-lightGray3 pb-[0.7rem] mb-[0.3rem] text-mediumGray'>Delivery Address</h2>
                                 <div className='flex flex-col'>

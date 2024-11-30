@@ -4,7 +4,8 @@ import {
     clearCart,
     deleteItem,
     loadCart,
-    removeFromCart
+    removeFromCart,
+    validateCart
 } from './cartThunks'
 
 const initialState = {
@@ -12,6 +13,7 @@ const initialState = {
     totalPrice: 0,
     totalMRP: 0,
     totalItems: 0,
+    totalValidProducts : 0,
     cartLoading: false,
     cartMessage: null,
     cartError: null
@@ -33,6 +35,7 @@ const cartSlice = createSlice({
             state.totalItems= 0;
             state.totalPrice= 0;
             state.totalMRP= 0;
+            state.totalValidProducts = 0;
         }
     },
     extraReducers: (builder) => {
@@ -55,6 +58,7 @@ const cartSlice = createSlice({
                     totalItems: action.payload.totalItems,
                     totalPrice: action.payload.totalPrice,
                     totalMRP: action.payload.totalMRP,
+                    totalValidProducts : action.payload.totalValidProducts,
                     cartLoading: false,
                     cartMessage: action.payload.message
                 }
@@ -87,6 +91,7 @@ const cartSlice = createSlice({
                     totalItems: action.payload.totalItems,
                     totalPrice: action.payload.totalPrice,
                     totalMRP: action.payload.totalMRP,
+                    totalValidProducts : action.payload.totalValidProducts,
                     cartLoading: false,
                     cartMessage: action.payload.message
                 }
@@ -119,6 +124,7 @@ const cartSlice = createSlice({
                     totalItems: action.payload.totalItems,
                     totalPrice: action.payload.totalPrice,
                     totalMRP: action.payload.totalMRP,
+                    totalValidProducts : action.payload.totalValidProducts,
                     cartLoading: false,
                     cartMessage: action.payload.message
                 }
@@ -152,6 +158,7 @@ const cartSlice = createSlice({
                     totalItems: 0,
                     totalPrice: 0,
                     totalMRP: 0,
+                    totalValidProducts : 0,
                     cartLoading: false,
                 }
             })
@@ -164,6 +171,7 @@ const cartSlice = createSlice({
                     totalItems: 0,
                     totalPrice: 0,
                     totalMRP: 0,
+                    totalValidProducts : 0,
                     cartLoading: false,
                 }
             })
@@ -187,6 +195,7 @@ const cartSlice = createSlice({
                     totalItems: action.payload.totalItems,
                     totalPrice: action.payload.totalPrice,
                     totalMRP: action.payload.totalMRP,
+                    totalValidProducts : action.payload.totalValidProducts,
                     cartLoading: false,
                 }
             })
@@ -197,6 +206,37 @@ const cartSlice = createSlice({
                     ...state,
                     cart: [],
                     cartLoading: false,
+                }
+            })
+
+            //validate cart pending
+            .addCase(validateCart.pending, (state) => {
+                return{
+                    ...state,
+                    cartLoading: true,
+                    cartMessage: null,
+                    cartError: null
+                }
+            })
+
+            //validate cart fulfilled
+            .addCase(validateCart.fulfilled, (state, action) => {
+                return{
+                    ...state,
+                    cartLoading: false,
+                    cart: action.payload.cart || [],
+                    totalItems: action.payload.totalItems,
+                    totalPrice: action.payload.totalPrice,
+                    totalMRP: action.payload.totalMRP,
+                    totalValidProducts : action.payload.totalValidProducts,
+                }
+            })
+
+            //validate cart rejected
+            .addCase(validateCart.rejected, (state, action) => {
+                return{
+                    ...state,
+                    cartLoading: false
                 }
             })
     }

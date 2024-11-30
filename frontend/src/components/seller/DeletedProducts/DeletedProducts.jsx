@@ -5,7 +5,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import SearchIcon from '@mui/icons-material/Search';
 import RestoreIcon from '@mui/icons-material/Restore';
-import { restoreMultipleProducts, deleteProduct, getProductDetails, restoreProduct } from '../../../features/seller/sellerThunks';
+import { restoreMultipleProducts, deleteProduct, getProductDetails, restoreProduct, getSellerDeletedProducts } from '../../../features/seller/sellerThunks';
 import { Loader } from '../../../layouts';
 import { categories } from '../data';
 import { ToastContainer, toast, Slide } from 'react-toastify';
@@ -204,6 +204,10 @@ const DeletedProducts = () => {
     const sortedAndFilteredProducts = useMemo(() => {
         return sortProducts(filterProducts(sellerDeletedProducts, categoryName, searchProduct), sortValue);
     }, [sellerDeletedProducts, categoryName, searchProduct, sortValue]) 
+
+    useEffect(() => {
+        dispatch(getSellerDeletedProducts())
+    }, [dispatch])
 
   return (
     <>

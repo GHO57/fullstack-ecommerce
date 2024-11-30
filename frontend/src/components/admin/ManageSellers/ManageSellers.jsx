@@ -271,7 +271,7 @@ const ManageSellers = () => {
                                     <TableCell sx={{...table_head_cell_properties, minWidth: 150, maxWidth: 150}} align="left">GSTIN</TableCell>
                                     <TableCell sx={{...table_head_cell_properties, minWidth: 150, maxWidth: 150}} align="left">Email</TableCell>
                                     <TableCell sx={{...table_head_cell_properties, minWidth: 150, maxWidth: 150}} align="right">Created At</TableCell>
-                                    <TableCell sx={{...table_head_cell_properties, minWidth: 100, maxWidth: 100}} align="center">Action</TableCell>
+                                    {/* <TableCell sx={{...table_head_cell_properties, minWidth: 100, maxWidth: 100}} align="center">Action</TableCell> */}
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -320,7 +320,7 @@ const ManageSellers = () => {
                                             </Tooltip>
                                         </TableCell>
                                         <TableCell sx={{...table_body_cell_properties, minWidth: 150, maxWidth: 200}} align="right">{seller.createdAt.split('T')[0]}</TableCell>
-                                        <TableCell align="right">
+                                        {/* <TableCell align="right">
                                             <div className='flex gap-[0.4rem] justify-center'>
                                                 <Tooltip title="delete" placement="left" arrow>
                                                     <IconButton onClick={() => {handleDeleteModalOpen(seller.id)}} aria-label='delete' size='medium'><DeleteIcon fontSize='inherit' /></IconButton>
@@ -341,7 +341,7 @@ const ManageSellers = () => {
                                                         </Box>
                                                     </Modal>
                                             </div>
-                                        </TableCell>
+                                        </TableCell> */}
                                     </TableRow>
                                 ))}    
                             </TableBody>

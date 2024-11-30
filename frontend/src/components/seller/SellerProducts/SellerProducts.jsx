@@ -6,7 +6,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import SearchIcon from '@mui/icons-material/Search';
-import { deleteMultipleProducts, deleteProduct, getProductDetails } from '../../../features/seller/sellerThunks';
+import { deleteMultipleProducts, deleteProduct, getProductDetails, getSellerProducts } from '../../../features/seller/sellerThunks';
 import { Loader } from '../../../layouts';
 import AddProduct from '../AddProduct/AddProduct';
 import UpdateProduct from '../UpdateProduct/UpdateProduct';
@@ -172,6 +172,11 @@ const SellerProducts = () => {
     useEffect(() => {
         setPage(0)
     }, [categoryName, sortValue, searchProduct])
+    
+
+    useEffect(() => {
+        dispatch(getSellerProducts())
+    }, [dispatch])
 
     const sortProducts = (products, sortValue) => {
         switch (sortValue) {

@@ -12,8 +12,15 @@ const WishlistCard = ({ product }) => {
 
     const dispatch = useDispatch()
 
+    const [deleteLoading, setDeleteLoading] = useState(false)
+
     const handleRemoveWishlistProduct = (product_id) => {
-        dispatch(removeFromWishlist(product_id))
+        setDeleteLoading(true)
+        dispatch(removeFromWishlist(product_id)).then(
+          () =>{
+            setDeleteLoading(false)
+          }
+        )
     }
 
 
@@ -23,7 +30,9 @@ const WishlistCard = ({ product }) => {
         key={product.id}
         className="relative flex flex-col bg-white w-[290px] h-fit shadow-lg border-[1px] border-lightGray3 rounded-[7px]"
       >
-        <FontAwesomeIcon onClick={() => {handleRemoveWishlistProduct(product.id)}} icon={faTrashCan} style={{color: "#ff4246", position: 'absolute', top: '12px', right: '12px', fontSize: '21px', cursor: 'pointer'}} />
+        <button disabled={deleteLoading}>
+          <FontAwesomeIcon onClick={() => {handleRemoveWishlistProduct(product.id)}} icon={faTrashCan} style={{color: "#ff4246", position: 'absolute', top: '12px', right: '12px', fontSize: '21px', cursor: 'pointer'}} />
+        </button>
         <div className="flex-center p-[2rem]">
           <img
             className="h-[120px]"

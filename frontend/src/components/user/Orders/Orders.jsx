@@ -74,12 +74,12 @@ const Orders = () => {
         <Loader/>
     ) : (
         <>
-        <div className='min-h-[90vh] w-full px-[5rem] py-[3rem]'>
+        <div className='min-h-screen w-full px-[5rem] py-[3rem]'>
             <div className='flex flex-col justify-center items-start w-full h-full gap-[1rem]'>
                 {allOrders.length === 0 ? (
                     <div className='flex-center flex-col w-full pt-[3rem] gap-[1rem]'>
                         <div className='flex-center flex-col gap-[4rem] w-full'>
-                            <img className='w-[35%]' src="/no-products.svg" alt="no products" />
+                            <img className='w-[25%]' src="/no-products.svg" alt="no products" />
                             <h2 className='font-extrabold text-[35px] text-mediumGray'>No Orders Found</h2>
                         </div>
                     </div>

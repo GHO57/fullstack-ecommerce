@@ -154,6 +154,35 @@ export const updateProduct = createAsyncThunk('seller/product/update', async(for
     }
 })
 
+export const getSellerProducts = createAsyncThunk('seller/products', async(thunkAPI) => {
+    try{
+        const { data } = await axios.get('/api/v1/seller/getproducts')
+
+        return data
+    }catch(error){
+        if(error.response){
+            return thunkAPI.rejectWithValue(error.response.data)
+        }else{
+            return thunkAPI.rejectWithValue({ message: error.message })
+        }
+    }
+})
+
+
+export const getSellerDeletedProducts = createAsyncThunk('seller/deleted-products', async(thunkAPI) => {
+    try{
+        const { data } = await axios.get('/api/v1/seller/getdeletedproducts')
+
+        return data
+    }catch(error){
+        if(error.response){
+            return thunkAPI.rejectWithValue(error.response.data)
+        }else{
+            return thunkAPI.rejectWithValue({ message: error.message })
+        }
+    }
+})
+
 
 //get product details
 export const getProductDetails = createAsyncThunk('seller/productdetails', async(product_id, thunkAPI) => {
@@ -174,7 +203,7 @@ export const getProductDetails = createAsyncThunk('seller/productdetails', async
 
 
 //get all orders by seller id
-export const getAllOrdersBySellerId = createAsyncThunk("seller/get-orders", async(thunkAPI) => {
+export const getAllOrdersBySellerId = createAsyncThunk("seller/get-order", async(thunkAPI) => {
     try{
         const { data } = await axios.get('/api/v1/seller/orders')
 

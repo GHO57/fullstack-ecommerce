@@ -25,7 +25,7 @@ import { addDeliveryAddress, deleteDeliveryAddress, getAllOrders, getOrderItems 
 import { Loader } from '../../../layouts';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { clearCart, loadCart } from '../../../features/cart/cartThunks';
+import { clearCart, validateCart } from '../../../features/cart/cartThunks';
 import ButtonLoader from '../../../layouts/ButtonLoader/ButtonLoader';
 
 
@@ -35,9 +35,9 @@ const Checkout = () => {
   const navigate = useNavigate()
 
   const { loading, isAuthenticated, user, deliveryAddress } = useSelector((state) => state.user)
-  const { cart, totalItems, totalMRP, totalPrice } = useSelector((state) => state.cart)
+  const { cartLoading, cart, totalItems, totalMRP, totalPrice } = useSelector((state) => state.cart)
 
-  const table_head_cell_properties = { fontSize: 15,fontWeight: "bold", fontFamily: "Montserrat, sans-serif", pt: 2, pb: 3, px: 2  }
+  const table_head_cell_properties = { fontSize: 15,fontWeight: "bold", fontFamily: "Montserrat, sans-serif", pt: 2.5, pb:2.5, px: 2, color: 'white'  }
     const table_body_cell_properties = { fontFamily: "Montserrat, sans-serif", fontWeight: 500, fontSize: 13, borderBottom: 0, py: 4, px: 2 }
     const truncation_properties = {
         whiteSpace: 'nowrap',
@@ -176,7 +176,7 @@ const Checkout = () => {
               }
             } catch (error) {
               setButtonLoading(false)
-              toast.error(`An error occurred during payment verification. Please try again.`);
+              toast.error(`An error occurred during payment verification. Please try again. ${error}`);
             }
         },
         modal: {
@@ -210,16 +210,16 @@ const Checkout = () => {
   }, [deliveryAddress])
 
   useEffect(() => {
-    dispatch(loadCart())
+    dispatch(validateCart())
   }, [dispatch])
 
   return (
     <>
-    {loading ? (
+    {(loading || cartLoading) ? (
         <Loader />
     ):(
         <div className='w-full flex-center py-[2rem]'>
-            <div className='max-w-[1080px] w-full flex flex-col gap-y-[2rem] min-h-[80vh]'>
+            <div className='max-w-[1280px] w-full flex flex-col gap-y-[2rem] min-h-[80vh]'>
                 <Box sx={{ mt: 2, mb: 2 }}>
                     <>
                         {activeStep === 0 && (
@@ -335,20 +335,24 @@ const Checkout = () => {
                                 <div className='flex-center flex-col flex-[1] my-[2rem] gap-[1rem]'>
                                     <div className='flex flex-col w-full gap-[1rem]'>
                                         {deliveryAddress.map((address, index) => (
-                                            <div key={index} onClick={() => handleAddressSelect(index, address)} className='relative py-[1.2rem] pr-[0.5rem] pl-[3rem] flex flex-col font-[Roboto] gap-[0.5rem] border-[1px] border-lightGray3 w-full rounded-[15px] shadow-md'>
+                                            <div key={index} onClick={() => handleAddressSelect(index, address)} className='relative py-[1.2rem] pr-[1.5rem] pl-[3rem] flex flex-col font-[Roboto] gap-[0.5rem] border-[1px] border-lightGray3 w-full rounded-[3px] shadow-md'>
                                                 <RadioGroup sx={{ position: 'absolute', top: '1rem', left: 7 }} onChange={() => handleAddressSelect(index, address)}>
                                                     <Radio size='small' checked={index === addressIndex ? true : false}></Radio>
                                                 </RadioGroup>
-                                                <span className='flex items-center justify-between gap-[2rem]'>
-                                                    <h2 className='font-bold text-[20px]'>
-                                                        {address.fullname}
-                                                    </h2>
-                                                    <span className='flex gap-[2rem]'>
-                                                        <p className='font-medium font-[Roboto] text-mediumGray text-[15px]'>{address.mobile_number}</p>
-                                                        <p className='font-medium font-[Roboto] text-mediumGray text-[15px]'>{address.alternate_phone_number}</p>
-                                                    </span>
-                                                </span>
-                                                <p className='font-[Roboto] text-mediumGray text-[14px] max-w-[500px]'>{address.address}, {address.state}, {address.city}, {address.pincode}, india, {address.landmark}</p>
+                                                <div className='flex justify-between'>
+                                                    <div className='flex flex-col'>
+                                                        <span className='flex items-center justify-between gap-[2rem]'>
+                                                            <h2 className='font-bold text-[20px]'>
+                                                                {address.fullname}
+                                                            </h2>
+                                                        </span>
+                                                        <p className='font-[Roboto] text-mediumGray text-[14px] max-w-[1000px]'>{address.address}, {address.state}, {address.city}, {address.pincode}, india, {address.landmark}</p>
+                                                    </div>
+                                                    <div className='flex flex-col'>
+                                                        <p className='font-medium font-[Roboto] text-mediumGray text-[15px]'>Primary : {address.mobile_number}</p>
+                                                        <p className='font-medium font-[Roboto] text-mediumGray text-[15px]'>Alternate : {address.alternate_phone_number}</p>
+                                                    </div>
+                                                </div>
                                                 <span className='flex gap-[2rem]'>
                                                     <button onClick={() => handleAddressDelete(address.id)} className='font-[Roboto] text-primary font-medium'>
                                                         DELETE
@@ -383,7 +387,7 @@ const Checkout = () => {
                                     <TableContainer>
                                         <Table>
                                             <TableHead>
-                                                <TableRow>
+                                                <TableRow className='bg-primary'>
                                                     <TableCell sx={{...table_head_cell_properties}} align='left'>Product</TableCell>
                                                     <TableCell sx={{...table_head_cell_properties}} align='right'>Price</TableCell>
                                                     <TableCell sx={{...table_head_cell_properties}} align='center'>Quantity</TableCell>
@@ -428,9 +432,9 @@ const Checkout = () => {
                                         </Table>
                                     </TableContainer>
                                 </div>
-                                <div className='flex flex-col flex-[0.8] p-[1rem] gap-[1.5rem]'>
-                                    <div className='flex flex-col gap-[1.5rem] border-l-[1px] border-l-lightGray3 pl-[1.5rem]'>
-                                        <h3 className='font-[Roboto] font-bold pb-[1.5rem] border-b-[1px] border-b-lightGray3'>Price Details ({totalItems} items)</h3>
+                                <div className='flex flex-col flex-[0.75] p-[1.5rem] gap-[1.5rem] border-[1px] border-lightGray3 shadow-lg h-full max-h-fit'>
+                                    <div className='flex flex-col gap-[1.5rem]'>
+                                        <h3 className='font-[Roboto] font-bold pb-[1rem] border-b-[1px] border-b-lightGray3'>Price Details ({totalItems} items)</h3>
                                         <div className='flex flex-col gap-[1.5rem] border-b-[1px] border-b-lightGray3 pb-[1.5rem]'>
                                             <span className='flex items-center justify-between'>
                                                 <h4 className='font-[Roboto] flex font-medium text-[16px]'>Price: </h4>
@@ -461,7 +465,7 @@ const Checkout = () => {
                                              sx={{ 
                                                 width: '100%', 
                                                 borderRadius: '3px', 
-                                                height: 45, 
+                                                height: 47, 
                                                 '&.Mui-disabled': {
                                                     backgroundColor: '#ff9191', // Custom background color for disabled state
                                                     color: 'white', // Custom text color for disabled state

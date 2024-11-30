@@ -11,6 +11,7 @@ import { Loader } from '../../../layouts';
 import { categoriesWithLinks } from '../data';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import ProductCard from '../../../layouts/ProductCard/ProductCard';
+import { getAllProducts } from '../../../features/products/productsThunks';
 
 const ITEM_HEIGHT = 48; 
 const ITEM_PADDING_TOP = 8;
@@ -39,73 +40,69 @@ const CategorizedProducts = () => {
     const navigate = useNavigate()
     const { category: urlCategory } = useParams()
 
-    const { productLoading, productDetails, products } = useSelector((state) => state.products)
+    const { productLoading, products, pagination } = useSelector((state) => state.products)
     const { loading, isAuthenticated } = useSelector((state) => state.user);
   
-    const [productCardHovered, setProductCardHovered] = useState(null)
+    const [sortBy, setSortBy] = useState('')
     const [sortValue, setSortValue] = useState('')
-    const [categoryName, setCategoryName] = useState('')
+    const [sortOrder, setSortOrder] = useState('')
+    const [categoryName, setCategoryName] = useState([])
     const [currentPage, setCurrentPage] = useState(1);
     const productsPerPage = 12;
-  
-
-    const handleProductCardHover = (index) => {
-        setProductCardHovered(index)
-      }
     
-      const handleMouseLeave = () => {
-        setProductCardHovered(null)
-      }
     
-      const handleAddtoCart = (product_id) => {
-        if(isAuthenticated){
-          dispatch(addToCart(product_id))
-          navigate('/cart')
-        }else{
-          toast.error("Login to add products to the cart")
+    const handleSortValueChange = (e) => {
+        switch(e.target.value){
+            case 'price_low_to_high' : 
+                setSortValue(e.target.value)
+                setSortBy('price')
+                setSortOrder('asc')
+                break;
+            case 'price_high_to_low' :
+                setSortValue(e.target.value)
+                setSortBy('price')
+                setSortOrder('desc')
+                break
+            default :
+                setSortValue('')
+                setSortBy('')
+                setSortOrder('')
+                break
         }
+      }
+
+      const fetchProducts = () => {
+        const params = {
+            page: currentPage,
+            limit: productsPerPage,
+            sortBy: sortBy,
+            sortOrder: sortOrder,
+            category: categoryName,
+        }
+        dispatch(getAllProducts(params))
       }
 
       useEffect(() => {
+        fetchProducts()
         window.scrollTo(0, 0);
+      }, [dispatch, currentPage, productsPerPage, sortBy, sortOrder]);
+      
+      useEffect(() => {
         if (urlCategory) {
             const foundCategory = categoriesWithLinks.find(cat => cat.link === urlCategory);
             if (foundCategory) {
-                setCategoryName(foundCategory.name)
+                setCategoryName([foundCategory.name])
             }
         }
       }, [urlCategory]);
-
-      const handleSortValueChange = (e) => {
-        setSortValue(e.target.value)
-      }
-
-      const sortProducts = (products, sortValue) => {
-        switch (sortValue) {
-            case 'L2H':
-                return [...products].sort((a, b) => a.price - b.price);
-            case 'H2L':
-                return [...products].sort((a, b) => b.price - a.price);
-            default:
-                return products;
-        }
-    };
-    
-        const filteredProducts = useMemo(() => {
-            let filtered = [...products];
-            if (categoryName) {
-                filtered = filtered.filter(product => product.category === categoryName);
-            }
-            return sortProducts(filtered, sortValue);
-        }, [products, categoryName, sortValue]);
 
         const handleChangePage = (event, value) => {
           setCurrentPage(value);
           window.scrollTo(0, 0);
         };
- 
-    return (
-    <>
+        
+        return (
+            <>
         {loading || productLoading ? (
             <Loader />
         ) : (
@@ -132,23 +129,23 @@ const CategorizedProducts = () => {
                                     <MenuItem value="">
                                         <em>None</em>
                                     </MenuItem>
-                                    <MenuItem value="L2H">Lowest to Highest Price</MenuItem>
-                                    <MenuItem value="H2L">Highest to Lowest Price</MenuItem>
+                                    <MenuItem value="price_low_to_high">Lowest to Highest Price</MenuItem>
+                                    <MenuItem value="price_high_to_low">Highest to Lowest Price</MenuItem>
                                 </Select>
                             </FormControl>
                         </div>
                         <div className="flex-center w-full gap-[4rem]">
-                            <div className={`${filteredProducts.length > 0 ? "grid grid-cols-4 gap-[2rem]" : "flex-center"}`}>
-                                {filteredProducts.length > 0 ? (
+                            <div className={`${products.length > 0 ? "grid grid-cols-4 gap-[2rem]" : "flex-center"}`}>
+                                {products.length > 0 ? (
                                     <>
-                                        {filteredProducts.map((product, index) => (
+                                        {products.map((product, index) => (
                                             <ProductCard product={product}/>
                                         ))}
                                     </>
                                 ) : (
                                     <>
                                         <div className='flex w-full text-center text-[35px] font-bold my-[5rem]'>
-                                            <h3>Sorry, no products here!</h3>
+                                            <h3>We couldn't find the product you're looking for!</h3>
                                         </div>
                                     </>
                                 )}
@@ -156,7 +153,7 @@ const CategorizedProducts = () => {
                         </div>
                         <div className='flex-center w-full mt-[2rem]'>
                             <Pagination
-                                count={Math.ceil(filteredProducts.length / productsPerPage)}
+                                count={Math.ceil(pagination.totalCount / productsPerPage)}
                                 page={currentPage}
                                 onChange={handleChangePage}
                                 color="primary"

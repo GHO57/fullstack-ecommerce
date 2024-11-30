@@ -53,7 +53,6 @@ const OrderSuccess = () => {
             setPaymentMethod(order.payment_method);
             setOrderStatus(order.status);
             setDeliveryAddressId(order.delivery_address_id)
-            console.log(order.delivery_address_id)
           }
 
         }

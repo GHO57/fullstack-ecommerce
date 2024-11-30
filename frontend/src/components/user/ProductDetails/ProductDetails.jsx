@@ -15,6 +15,50 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import { addToWishlist, removeFromWishlist } from '../../../features/wishlist/wishlistThunks';
 
+const renderButton = () => {
+  if (product.is_deleted === 1) {
+    return (
+      <button
+        disabled
+        className="bg-secondary hover:shadow-lg disabled:bg-[#ffa1a1] py-[0.8rem] w-[190px] text-white font-medium shadow-md rounded-[3px]"
+      >
+        Currently Unavailable
+      </button>
+    );
+  }
+  if (product.stock <= 0) {
+    return (
+      <button
+        disabled
+        className="bg-secondary hover:shadow-lg disabled:bg-[#ffa1a1] py-[0.8rem] w-[190px] text-white font-medium shadow-md rounded-[3px]"
+      >
+        Out of Stock
+      </button>
+    );
+  }
+  if (cart.find((item) => item.id === product.id)) {
+    return (
+      <button
+        onClick={() => handleGotoCart()}
+        disabled={cartLoading}
+        className="bg-primary hover:bg-secondary hover:shadow-lg disabled:bg-[#ffa1a1] transition-all duration-150 py-[0.8rem] w-[190px] text-white font-medium shadow-md rounded-[3px]"
+      >
+        {cartLoading ? <ButtonLoader /> : <>Go to Cart</>}
+      </button>
+    );
+  }
+  return (
+    <button
+      onClick={() => handleAddtoCart(product.id)}
+      disabled={cartLoading}
+      className="bg-primary hover:bg-secondary hover:shadow-lg disabled:bg-[#ffa1a1] transition-all duration-150 py-[0.8rem] w-[190px] text-white font-medium shadow-md rounded-[3px]"
+    >
+      {cartLoading ? <ButtonLoader /> : <>Add to Cart</>}
+    </button>
+  );
+};
+
+
 const ProductDetails = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
@@ -22,7 +66,7 @@ const ProductDetails = () => {
   const { isAuthenticated } = useSelector((state) => state.user)
   const { productDetails, productLoading, products } = useSelector((state) => state.products)
   const { cartLoading, cart } = useSelector((state) => state.cart)
-  const { wishlist } = useSelector((state) => state.wishlist)
+  const { wishlistLoading, wishlist } = useSelector((state) => state.wishlist)
 
   const [categoryName, setCategoryName] = useState('')
   const [shuffledProducts, setShuffledProducts] = useState([]);
@@ -92,7 +136,7 @@ const ProductDetails = () => {
                   </Breadcrumbs>
               </div>
           </div>
-          <div className='flex justify-center w-full py-[2rem]'>
+          <div className='flex justify-center w-full '>
             <div className='max-w-[1100px] w-full flex'>
               {productDetails.map((product, key) => (
                 <div key={product.id} className='flex gap-[3rem]'>
@@ -127,34 +171,49 @@ const ProductDetails = () => {
                     </div>
                     <div className='flex align-center gap-x-[2rem]'>
                       <div className='w-fit'>
-                        {cart.find((item) => item.id === product.id) ? (
-                            <button
-                              onClick={() => handleGotoCart()}
-                              disabled={cartLoading}  
-                              className='bg-primary hover:bg-secondary hover:shadow-lg disabled:bg-[#ffa1a1] transition-all duration-150 py-[0.8rem] w-[190px] text-white font-medium shadow-md rounded-[3px]'>
-                                {cartLoading ? (
-                                  <ButtonLoader />
-                                ) : (
-                                    <>
-                                      Go to Cart
-                                    </>
-                                )}
-                            </button>
-                          ) : (
-                            <button
-                              onClick={() => handleAddtoCart(product.id)}
-                              disabled={cartLoading}  
-                              className='bg-primary hover:bg-secondary hover:shadow-lg disabled:bg-[#ffa1a1] transition-all duration-150 py-[0.8rem] w-[190px] text-white font-medium shadow-md rounded-[3px]'>
-                                {cartLoading ? (
-                                  <ButtonLoader />
-                                ) : (
-                                      <>
-                                        Add to Cart
-                                      </>
-                                    )
-                                }
-                            </button>
-                          )}
+                        {(() => {
+                          if (product.is_deleted === 1) {
+                            // Case: Product is deleted
+                            return (
+                              <button
+                                disabled={true}
+                                className="bg-secondary hover:shadow-lg disabled:bg-[#ffa1a1] py-[0.8rem] w-[190px] text-white font-medium shadow-md rounded-[3px]"
+                              >
+                                Currently Unavailable
+                              </button>
+                            );
+                          } else if (product.stock <= 0) {
+                            // Case: Product is out of stock but not deleted
+                            return (
+                              <button
+                                disabled={true}
+                                className="bg-secondary hover:shadow-lg disabled:bg-[#ffa1a1] py-[0.8rem] w-[190px] text-white font-medium shadow-md rounded-[3px]"
+                              >
+                                Out of Stock
+                              </button>
+                            );
+                          } else {
+                            // Case: Product is in stock
+                            return cart.find((item) => item.id === product.id) ? (
+                              <button
+                                onClick={() => handleGotoCart()}
+                                disabled={cartLoading}
+                                className="bg-primary hover:bg-secondary hover:shadow-lg disabled:bg-[#ffa1a1] transition-all duration-150 py-[0.8rem] w-[190px] text-white font-medium shadow-md rounded-[3px]"
+                              >
+                                {cartLoading ? <ButtonLoader /> : <>Go to Cart</>}
+                              </button>
+                            ) : (
+                              <button
+                                onClick={() => handleAddtoCart(product.id)}
+                                disabled={cartLoading}
+                                className="bg-primary hover:bg-secondary hover:shadow-lg disabled:bg-[#ffa1a1] transition-all duration-150 py-[0.8rem] w-[190px] text-white font-medium shadow-md rounded-[3px]"
+                              >
+                                {cartLoading ? <ButtonLoader /> : <>Add to Cart</>}
+                              </button>
+                            );
+                          }
+                        })()}
+
                       </div>
                       {/* {wishlist.find((item) => item.id === product.id) ? (
                         <div
@@ -172,17 +231,23 @@ const ProductDetails = () => {
                         </div>                      
                       )} */}
                       {wishlist.find((item) => item.id === product.id) ? (
-                          <FavoriteIcon 
+                          <button disabled={wishlistLoading}>
+                            <FavoriteIcon 
                             fontSize="large"
                             onClick={() => {handleRemoveWishlistProduct(product.id)}}  
                             className="text-primary self-center cursor-pointer hover:text-secondary"
                           />
+                          </button>
                       ) : (                          
-                          <FavoriteBorderIcon
-                            fontSize="large"
-                            onClick={() => {handleAddToWishlist(product.id)}}
-                            className='self-center hover:text-primary cursor-pointer'
-                          />
+                          <button
+                            disabled={wishlistLoading}
+                          >
+                            <FavoriteBorderIcon
+                              fontSize="large"
+                              onClick={() => {handleAddToWishlist(product.id)}}
+                              className='self-center hover:text-primary cursor-pointer'
+                            />
+                          </button>
                       )}
                     </div>
                   </div>

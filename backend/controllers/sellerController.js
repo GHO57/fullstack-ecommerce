@@ -209,7 +209,7 @@ exports.addProduct = catchAsyncErrors(async (req, res, next) => {
       });
     }
   } catch (error) {
-    return next(new errorHandler(`Something went wrong ${error.message}`, 500));
+    return next(new errorHandler(`Something went wrong`, 500));
   }
 });
 
@@ -507,20 +507,18 @@ exports.updateProductDetails = catchAsyncErrors(async (req, res, next) => {
 
 
 
-//get all products
+//get products
 
 exports.getProducts = catchAsyncErrors(async(req, res, next) => {
     const { id } = req.user[0][0]
     
     try{
         const [products] = await pool.execute('SELECT * FROM products WHERE seller_id = ? AND is_deleted = 0', [id])
-        const [deletedProducts] = await pool.execute('SELECT * FROM products WHERE seller_id = ? AND is_deleted = 1', [id])
 
         if(products.length > 0){    
             res.status(200).json({
                 success: true,
                 products,
-                deletedProducts
             })
         }else{
             return next(new errorHandler('No products', 404))
@@ -529,6 +527,29 @@ exports.getProducts = catchAsyncErrors(async(req, res, next) => {
     }catch(error){
         return next(new errorHandler('Something went wrong', 500))
     }
+})
+
+
+//get deleted products
+
+exports.getDeletedProducts = catchAsyncErrors(async(req, res, next) => {
+  const { id } = req.user[0][0]
+  
+  try{
+      const [deletedProducts] = await pool.execute('SELECT * FROM products WHERE seller_id = ? AND is_deleted = 1', [id])
+
+      if(deletedProducts.length > 0){    
+          res.status(200).json({
+              success: true,
+              deletedProducts
+          })
+      }else{
+          return next(new errorHandler('No Deleted products', 404))
+      }
+
+  }catch(error){
+      return next(new errorHandler(`Something went wrong`, 500))
+  }
 })
 
 
@@ -625,12 +646,25 @@ exports.getOrderItemsBySellerId = catchAsyncErrors(async(req, res, next) => {
   }
 
   try{
-      const [orderItems] = await pool.execute('SELECT oi.id, oi.order_id, oi.product_id, oi.seller_id, oi.quantity, oi.price, oi.mrp, oi.product_status, p.image_url, p.name FROM order_items oi, products p WHERE oi.product_id = p.id AND order_id = ? AND oi.seller_id = ?', [order_id, sellerId])
+      const [orderItems] = await pool.execute(`
+          SELECT oi.id, oi.order_id, oi.product_id, oi.seller_id, oi.quantity, oi.price, oi.mrp, oi.product_status, p.image_url, p.name
+          FROM order_items oi
+          JOIN products p ON oi.product_id = p.id
+          WHERE oi.order_id = ? AND oi.seller_id = ?
+      `, [order_id, sellerId])
+
+      const [deliveryAddress] = await pool.execute(`
+          SELECT da.* 
+          FROM orders o 
+          JOIN delivery_address da ON o.delivery_address_id = da.id 
+          WHERE o.id = ?
+      `, [order_id])
 
       if(orderItems.length > 0){
           res.status(200).json({
               success: true,
-              orderItems
+              orderItems,
+              deliveryAddress,
           })
       }else{
           return next(new errorHandler('Order Not Found', 404))
@@ -760,6 +794,6 @@ exports.getSellerOrders = catchAsyncErrors(async (req, res, next) => {
         }
     });
   } catch (error) {
-      return next(new errorHandler(`Something went wrong ${id}`, 500));
+      return next(new errorHandler(`Something went wrong`, 500));
   }
 });

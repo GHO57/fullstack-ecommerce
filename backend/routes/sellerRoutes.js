@@ -1,6 +1,6 @@
 const express = require("express")
 const router = express.Router()
-const { sellerApplication, sellerLogin, sellerLogout, addProduct, getSellerDetails, deleteProduct, updateProductDetails, getProducts, getProductDetails, deleteMultipleProducts, restoreProduct, restoreMultipleProducts, getAllOrdersBySellerId, getOrderItemsBySellerId, updateOrderItemStatus, getSellerOrders} = require("../controllers/sellerController")
+const { sellerApplication, sellerLogin, sellerLogout, addProduct, getSellerDetails, deleteProduct, updateProductDetails, getProducts, getProductDetails, deleteMultipleProducts, restoreProduct, restoreMultipleProducts, getAllOrdersBySellerId, getOrderItemsBySellerId, updateOrderItemStatus, getSellerOrders, getDeletedProducts} = require("../controllers/sellerController")
 const { isSellerAuthenticated } = require("../middleware/auth")
 const uploadImage = require("../middleware/imageUpload")
 const { validateEmail, validateLogin, validateSellerApplication, validateSellerProducts, validateAll } = require("../middleware/validation")
@@ -45,8 +45,11 @@ router.route("/restoreproducts").post(isSellerAuthenticated, restoreMultipleProd
 //update product details
 router.route("/updateproduct").put(isSellerAuthenticated, uploadImage, updateProductDetails)
 
-//get all products
+//get products
 router.route("/getproducts").get(isSellerAuthenticated, getProducts)
+
+//get deleted products
+router.route("/getdeletedproducts").get(isSellerAuthenticated, getDeletedProducts)
 
 //get product details
 router.route("/getproductdetails/:product_id").get(isSellerAuthenticated, getProductDetails)

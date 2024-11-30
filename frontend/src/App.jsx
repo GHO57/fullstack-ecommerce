@@ -87,6 +87,9 @@ function AppContent() {
   };
 
   useEffect(() => {
+    const page = 1;
+    const limit = 10;
+
     //conditionally dispatches the loading thunks and renders the message and errors
     if(!hasLoadedUser.current){
         dispatch(loaduser())
@@ -95,7 +98,7 @@ function AppContent() {
         dispatch(loadadminuser())
         dispatch(loadSeller())
         dispatch(getSellerOrders())
-        dispatch(getAllProducts())
+        dispatch(getAllProducts({page, limit}))
         hasLoadedUser.current = true
     }
 

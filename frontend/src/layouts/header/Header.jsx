@@ -97,7 +97,7 @@ const header = () => {
                       <div className='flex flex-col gap-[1rem] font-normal items-start'>
                         <div className='border-b-[1px] border-lightGray3 w-full pb-[0.7rem]'>
                           <h2 className='font-bold text-[20px] text-darkGray2'>Hi,</h2>
-                          <h2 className='truncate font-bold text-[25px] text-mediumGray3'>{user[0].fullname.split(' ')[0]}</h2>
+                          <h2 className='truncate font-bold text-[25px] text-mediumGray2'>{user[0].fullname.split(' ')[0]}</h2>
                         </div>
                         <div className='flex flex-col font-normal gap-[0.4rem] w-full border-b-[1px] border-lightGray3 pb-[1rem] mb-[0.3rem]'>
                           <Link onClick={() => {setShowDropDown(false)}} className='text-mediumGray2 hover:text-primary hover:font-semibold flex items-center gap-[0.5rem]' to="/account"><FontAwesomeIcon icon={faUser} />Account</Link>
