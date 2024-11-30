@@ -95,6 +95,6 @@ exports.getProductDetails = catchAsyncErrors(async(req, res, next) => {
             return next(new errorHandler("Product not found" ,404))
         }
     }catch(error){
-        return next(new errorHandler(`Something went wrong ${error}`, 500))
+        return next(new errorHandler(`Something went wrong`, 500))
     }
 })

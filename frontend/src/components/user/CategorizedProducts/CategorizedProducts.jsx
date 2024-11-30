@@ -85,7 +85,7 @@ const CategorizedProducts = () => {
       useEffect(() => {
         fetchProducts()
         window.scrollTo(0, 0);
-      }, [dispatch, currentPage, productsPerPage, sortBy, sortOrder]);
+      }, [dispatch, currentPage, productsPerPage, sortBy, sortOrder, categoryName]);
       
       useEffect(() => {
         if (urlCategory) {

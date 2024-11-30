@@ -1,13 +1,13 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from 'axios'
-
+import axiosInstance from "../axiosInstance";
 
 //admin login thunk
 
 export const adminLogin = createAsyncThunk('admin/login', async(form, thunkAPI) => {
     try{
         const config = { headers: { "Content-Type" : "application/json" }}
-        const { data } = await axios.post('/api/v1/admin/login', form, config)
+        const { data } = await axiosInstance.post('/api/v1/admin/login', form, config)
 
         return data
     }catch(error){
@@ -24,7 +24,7 @@ export const adminLogin = createAsyncThunk('admin/login', async(form, thunkAPI) 
 
 export const adminLogout = createAsyncThunk('admin/logout', async(thunkAPI) => {
     try{
-        const { data } = await axios.post('/api/v1/admin/logout')
+        const { data } = await axiosInstance.post('/api/v1/admin/logout')
 
         return data
     }catch(error){
@@ -40,7 +40,7 @@ export const adminLogout = createAsyncThunk('admin/logout', async(thunkAPI) => {
 
 export const adminGetAllUsers = createAsyncThunk('admin/get-all/users', async(thunkAPI) => {
     try{
-        const { data } = await axios.get('/api/v1/admin/getallusers');
+        const { data } = await axiosInstance.get('/api/v1/admin/getallusers');
 
         return data;
     }catch(error){
@@ -56,7 +56,7 @@ export const adminGetAllUsers = createAsyncThunk('admin/get-all/users', async(th
 
 export const adminGetAllSellers = createAsyncThunk('admin/get-all/sellers', async(thunkAPI) => {
     try{
-        const { data } = await axios.get('/api/v1/admin/getallsellers');
+        const { data } = await axiosInstance.get('/api/v1/admin/getallsellers');
 
         return data;
     }catch(error){
@@ -72,7 +72,7 @@ export const adminGetAllSellers = createAsyncThunk('admin/get-all/sellers', asyn
 
 export const adminGetAllAdmins = createAsyncThunk('admin/get-all/admins', async(thunkAPI) => {
     try{
-        const { data } = await axios.get('/api/v1/admin/getalladmins');
+        const { data } = await axiosInstance.get('/api/v1/admin/getalladmins');
 
         return data;
     }catch(error){
@@ -89,7 +89,7 @@ export const adminGetAllAdmins = createAsyncThunk('admin/get-all/admins', async(
 
 export const adminGetAllSellerApplications = createAsyncThunk('admin/get-all/seller/applications', async(thunkAPI) =>{
     try{
-        const { data } = await axios.get('/api/v1/admin/getsellerapplications');
+        const { data } = await axiosInstance.get('/api/v1/admin/getsellerapplications');
 
         return data;
     }catch(error){
@@ -106,7 +106,7 @@ export const adminGetAllSellerApplications = createAsyncThunk('admin/get-all/sel
 
 export const deleteUser = createAsyncThunk('admin/delete/user', async(id, thunkAPI) => {
     try{
-        const { data } = await axios.delete(`/api/v1/admin/deleteuser/${id}`)
+        const { data } = await axiosInstance.delete(`/api/v1/admin/deleteuser/${id}`)
 
         return data;
     }catch(error){
@@ -122,7 +122,7 @@ export const deleteUser = createAsyncThunk('admin/delete/user', async(id, thunkA
 
 export const deleteAdmin = createAsyncThunk('admin/delete/admin', async(id, thunkAPI) => {
     try{
-        const { data } = await axios.delete(`/api/v1/admin/deleteadmin/${id}`)
+        const { data } = await axiosInstance.delete(`/api/v1/admin/deleteadmin/${id}`)
 
         return data;
     }catch(error){
@@ -138,7 +138,7 @@ export const deleteAdmin = createAsyncThunk('admin/delete/admin', async(id, thun
 
 export const deleteSeller = createAsyncThunk('admin/delete/seller', async(id, thunkAPI) => {
     try{
-        const { data } = await axios.delete(`/api/v1/admin/deleteseller/${id}`)
+        const { data } = await axiosInstance.delete(`/api/v1/admin/deleteseller/${id}`)
 
         return data;
     }catch(error){
@@ -158,7 +158,7 @@ export const approveSeller = createAsyncThunk('/admin/seller/approve', async(for
     try{
         const config = { headers: { "Content-Type" : "application/json" } }
 
-        const { data } = await axios.post('/api/v1/admin/approveseller', form, config);
+        const { data } = await axiosInstance.post('/api/v1/admin/approveseller', form, config);
 
         return data;
     }catch(error){
@@ -177,7 +177,7 @@ export const rejectSeller = createAsyncThunk('/admin/seller/reject', async(form,
     try{
         const config = { headers: { "Content-Type" : "application/json" } }
 
-        const { data } = await axios.post('/api/v1/admin/rejectseller', form, config);
+        const { data } = await axiosInstance.post('/api/v1/admin/rejectseller', form, config);
 
         return data;
     }catch(error){
@@ -195,7 +195,7 @@ export const updateAdminRole = createAsyncThunk('/admin/updaterole', async(form,
     try{
         const config = { headers: { "Content-Type" : "application/json" } }
 
-        const { data } = await axios.post('/api/v1/admin/changeadminrole', form, config)
+        const { data } = await axiosInstance.post('/api/v1/admin/changeadminrole', form, config)
         
         return data
     }catch(error){
@@ -213,7 +213,7 @@ export const addNewAdmin = createAsyncThunk('/admin/addnewadmin', async(form, th
     try{
         const config = { headers: { "Content-Type" : "application/json" } }
 
-        const { data } = await axios.post('/api/v1/admin/addadmin', form, config)
+        const { data } = await axiosInstance.post('/api/v1/admin/addadmin', form, config)
         
         return data
     }catch(error){
@@ -230,7 +230,7 @@ export const addNewAdmin = createAsyncThunk('/admin/addnewadmin', async(form, th
 
 export const loadadminuser = createAsyncThunk('admin/dashboard', async(thunkAPI) => {
     try{
-        const { data } = await axios.get('/api/v1/admin/dashboard')
+        const { data } = await axiosInstance.get('/api/v1/admin/dashboard')
 
         return data
     }catch(error){

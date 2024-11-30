@@ -64,7 +64,7 @@ const ProductDetails = () => {
   const navigate = useNavigate()
 
   const { isAuthenticated } = useSelector((state) => state.user)
-  const { productDetails, productLoading, products } = useSelector((state) => state.products)
+  const { productDetails, productLoading, productDetailsLoading, products } = useSelector((state) => state.products)
   const { cartLoading, cart } = useSelector((state) => state.cart)
   const { wishlistLoading, wishlist } = useSelector((state) => state.wishlist)
 
@@ -122,7 +122,7 @@ const ProductDetails = () => {
 
   return (
     <>
-      {productLoading ? (
+      {productLoading || productDetailsLoading ? (
         <Loader />
       ) : (
         <>

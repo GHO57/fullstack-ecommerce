@@ -12,6 +12,7 @@ const initialState = {
         currentPage: 1,
         perPage: 10
     },
+    productDetailsLoading: false,
     productDetails: [],
     productLoading: false,
     productMessage: null,
@@ -70,7 +71,7 @@ const productSlice = createSlice({
             .addCase(getProductDetails.pending, (state) => {
                 return{
                     ...state,
-                    productLoading: true,
+                    productDetailsLoading: true,
                     productMessage: null,
                     productError: null
                 }
@@ -81,7 +82,7 @@ const productSlice = createSlice({
                 return{
                     ...state,
                     productDetails: action.payload.productDetails,
-                    productLoading: false,
+                    productDetailsLoading: false,
                 }
             })
 
@@ -90,7 +91,7 @@ const productSlice = createSlice({
                 return{
                     ...state,
                     productDetails: [],
-                    productLoading: false,
+                    productDetailsLoading: false,
                 }
             })
     }

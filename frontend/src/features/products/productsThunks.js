@@ -1,11 +1,12 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from 'axios'
+import axiosInstance from "../axiosInstance";
 
 //get all products
 
 export const getAllProducts = createAsyncThunk('products/get-all', async(params, thunkAPI) => {
     try{
-        const { data } = await axios.get('/api/v1/product/getallproducts', {
+        const { data } = await axiosInstance.get('/api/v1/product/getallproducts', {
             params
         })
 
@@ -23,7 +24,7 @@ export const getAllProducts = createAsyncThunk('products/get-all', async(params,
 
 export const getProductDetails = createAsyncThunk('product/get-details', async(product_id, thunkAPI) => {
     try{
-        const { data } = await axios.get(`/api/v1/product/getdetails/${product_id}`)
+        const { data } = await axiosInstance.get(`/api/v1/product/getdetails/${product_id}`)
 
         return data
     }catch(error){

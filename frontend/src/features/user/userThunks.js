@@ -1,13 +1,13 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from 'axios'
-
+import axiosInstance from "../axiosInstance";
 
 //send otp through email 
 
 export const sendotp = createAsyncThunk('user/sentotp', async(email, thunkAPI) => {
     try{
         const config = { headers: { "Content-Type": "application/json" } };
-        const { data } = await axios.post('/api/v1/user/sendotp', { email }, config)
+        const { data } = await axiosInstance.post('/api/v1/user/sendotp', { email }, config)
 
         return data.message
     }catch(error){
@@ -25,7 +25,7 @@ export const sendotp = createAsyncThunk('user/sentotp', async(email, thunkAPI) =
 export const loginsignup = createAsyncThunk("user/loginsignup", async(form, thunkAPI) => {
     try{
         const config = { headers : { "Content-Type" : "application/json" }};
-        const { data } = await axios.post('/api/v1/user/loginsignup', form, config)
+        const { data } = await axiosInstance.post('/api/v1/user/loginsignup', form, config)
 
         return data
     }catch(error){
@@ -41,7 +41,7 @@ export const loginsignup = createAsyncThunk("user/loginsignup", async(form, thun
 export const signupuser = createAsyncThunk("user/signupuser", async(form, thunkAPI) => {
     try{
         const config = { headers : { "Content-Type" : "application/json" }};
-        const { data } = await axios.post('/api/v1/user/signupuser', form, config)
+        const { data } = await axiosInstance.post('/api/v1/user/signupuser', form, config)
 
         return data
     }catch(error){
@@ -57,7 +57,7 @@ export const signupuser = createAsyncThunk("user/signupuser", async(form, thunkA
 //logout
 export const logoutuser = createAsyncThunk("user/logout", async(thunkAPI) => {
     try{
-        const { data } = await axios.post('/api/v1/user/logout')
+        const { data } = await axiosInstance.post('/api/v1/user/logout')
 
         return data
     }catch(error){
@@ -73,7 +73,7 @@ export const logoutuser = createAsyncThunk("user/logout", async(thunkAPI) => {
 export const addDeliveryAddress = createAsyncThunk("user/add-delivery-address", async(form, thunkAPI) => {
     try{
         const config = { headers : { "Content-Type" : "application/json" }};
-        const { data } = await axios.post('/api/v1/user/adddeliveryaddress', form, config)
+        const { data } = await axiosInstance.post('/api/v1/user/adddeliveryaddress', form, config)
 
         return data
     }catch(error){
@@ -89,7 +89,7 @@ export const addDeliveryAddress = createAsyncThunk("user/add-delivery-address", 
 export const deleteDeliveryAddress = createAsyncThunk("user/delete-delivery-address", async(address_id, thunkAPI) => {
     try{
         const config = { headers : { "Content-Type" : "application/json" }};
-        const { data } = await axios.post('/api/v1/user/deletedeliveryaddress', { address_id }, config)
+        const { data } = await axiosInstance.post('/api/v1/user/deletedeliveryaddress', { address_id }, config)
 
         return data
     }catch(error){
@@ -105,7 +105,7 @@ export const deleteDeliveryAddress = createAsyncThunk("user/delete-delivery-addr
 //get all orders
 export const getAllOrders = createAsyncThunk("user/get-orders", async(thunkAPI) => {
     try{
-        const { data } = await axios.get('/api/v1/user/orders')
+        const { data } = await axiosInstance.get('/api/v1/user/orders')
 
         return data
     }catch(error){
@@ -120,7 +120,7 @@ export const getAllOrders = createAsyncThunk("user/get-orders", async(thunkAPI) 
 //get order items by order id
 export const getOrderItems = createAsyncThunk("user/orders/items", async(order_id, thunkAPI) => {
     try{
-        const { data } = await axios.get(`/api/v1/user/order/items/${order_id}`)
+        const { data } = await axiosInstance.get(`/api/v1/user/order/items/${order_id}`)
 
         return data
     }catch(error){
@@ -136,7 +136,7 @@ export const getOrderItems = createAsyncThunk("user/orders/items", async(order_i
 
 export const loaduser = createAsyncThunk("user/loaduser", async(thunkAPI) => {
     try{
-        const { data } = await axios.get('/api/v1/user/dashboard')
+        const { data } = await axiosInstance.get('/api/v1/user/dashboard')
 
         return data
     }catch(error){
@@ -152,7 +152,7 @@ export const loaduser = createAsyncThunk("user/loaduser", async(thunkAPI) => {
 export const updateAddress = createAsyncThunk("user/updateAddress", async(form, thunkAPI) => {
     try{
         const config = { headers : { "Content-Type" : "application/json" }};
-        const { data } = await axios.post('/api/v1/user/updateAddress', form, config)
+        const { data } = await axiosInstance.post('/api/v1/user/updateAddress', form, config)
 
         return data
     }catch(error){
@@ -167,7 +167,7 @@ export const updateAddress = createAsyncThunk("user/updateAddress", async(form, 
 //update user fullname
 export const updateFullName = createAsyncThunk('user/updateFullName', async ({ email, fullname }, thunkAPI) => {
         try {
-            const { data } = await axios.post('/api/v1/user/updateUser', { email, fullname });
+            const { data } = await axiosInstance.post('/api/v1/user/updateUser', { email, fullname });
             return data;
         } catch(error){
             if(error.response){

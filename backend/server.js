@@ -1,6 +1,8 @@
 const app = require("./app")
 const dotenv = require("dotenv")
 const { db_connection } = require("./config/database")
+const path = require("path")
+const express = require("express")
 
 //.env config
 
@@ -11,6 +13,12 @@ dotenv.config({
 //checking database connection status
 
 db_connection()
+
+app.use(express.static(path.join(__dirname, '../frontend/dist')));
+
+app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, '../frontend/dist', 'index.html'));
+});
 
 
 //running the server

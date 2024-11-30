@@ -1,12 +1,13 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from 'axios'
+import axiosInstance from "../axiosInstance";
 
 //add item to cart
 
 export const addToCart = createAsyncThunk('cart/add', async(product_id, thunkAPI) => {
     try{
         const config = { headers: { "Content-Type" : "application/json" } }
-        const { data } = await axios.post('/api/v1/user/cart/additem', { product_id }, config)
+        const { data } = await axiosInstance.post('/api/v1/user/cart/additem', { product_id }, config)
 
         return data
     }catch(error){
@@ -24,7 +25,7 @@ export const addToCart = createAsyncThunk('cart/add', async(product_id, thunkAPI
 export const removeFromCart = createAsyncThunk('cart/remove', async(product_id, thunkAPI) => {
     try{
         const config = { headers: { "Content-Type" : "application/json" } }
-        const { data } = await axios.post('/api/v1/user/cart/removeitem', { product_id }, config)
+        const { data } = await axiosInstance.post('/api/v1/user/cart/removeitem', { product_id }, config)
 
         return data
     }catch(error){
@@ -42,7 +43,7 @@ export const removeFromCart = createAsyncThunk('cart/remove', async(product_id, 
 export const deleteItem = createAsyncThunk('cart/delete', async(product_id, thunkAPI) => {
     try{
         const config = { headers: { "Content-Type" : "application/json" } }
-        const { data } = await axios.post('/api/v1/user/cart/delete', { product_id }, config)
+        const { data } = await axiosInstance.post('/api/v1/user/cart/delete', { product_id }, config)
 
         return data
     }catch(error){
@@ -58,7 +59,7 @@ export const deleteItem = createAsyncThunk('cart/delete', async(product_id, thun
 
 export const clearCart = createAsyncThunk('cart/clear', async(thunkAPI) => {
     try{
-        const { data } = await axios.post('/api/v1/user/cart/clear')
+        const { data } = await axiosInstance.post('/api/v1/user/cart/clear')
 
         return data
     }catch(error){
@@ -75,7 +76,7 @@ export const clearCart = createAsyncThunk('cart/clear', async(thunkAPI) => {
 
 export const loadCart = createAsyncThunk('cart/load', async(thunkAPI) => {
     try{
-        const { data } = await axios.get('/api/v1/user/cart/getitems')
+        const { data } = await axiosInstance.get('/api/v1/user/cart/getitems')
 
         return data
     }catch(error){
@@ -91,7 +92,7 @@ export const loadCart = createAsyncThunk('cart/load', async(thunkAPI) => {
 
 export const validateCart = createAsyncThunk("cart/validate", async(thunkAPI) => {
     try{
-        const { data } = await axios.post("/api/v1/user/cart/validate")
+        const { data } = await axiosInstance.post("/api/v1/user/cart/validate")
 
         return data
     }catch(error){

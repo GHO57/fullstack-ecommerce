@@ -1,12 +1,13 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from 'axios'
+import axiosInstance from "../axiosInstance";
 
 
 //add product to wishlist
 export const addToWishlist = createAsyncThunk('user/wishlist/add', async(productId, thunkAPI) => {
     try{
         const config = { header: {"Content-Type" : "application/json"} }
-        const { data } = await axios.post('/api/v1/wishlist/add', { "product_id" : productId }, config)
+        const { data } = await axiosInstance.post('/api/v1/wishlist/add', { "product_id" : productId }, config)
 
         return data
     }catch(error){
@@ -22,7 +23,7 @@ export const addToWishlist = createAsyncThunk('user/wishlist/add', async(product
 
 export const removeFromWishlist = createAsyncThunk("user/wishlist/remove", async(productId, thunkAPI) => {
     try{
-        const { data } = await axios.delete(`/api/v1/wishlist/remove/${productId}`)
+        const { data } = await axiosInstance.delete(`/api/v1/wishlist/remove/${productId}`)
 
         return data
     }catch(error){
@@ -39,7 +40,7 @@ export const removeFromWishlist = createAsyncThunk("user/wishlist/remove", async
 
 export const loadWishlist = createAsyncThunk("user/wishlist/getallproducts", async(thunkAPI) => {
     try{
-        const { data } = await axios.get("/api/v1/wishlist/getallproducts")
+        const { data } = await axiosInstance.get("/api/v1/wishlist/getallproducts")
 
         return data
     }catch(error){
