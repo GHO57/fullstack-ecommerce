@@ -4,6 +4,7 @@ const errorHandler = require("../utils/errorHandler");
 const { v4: uuidv4 } = require("uuid");
 const { sendSellerToken } = require("../utils/jwtToken");
 const cloudinary = require("../config/cloudinary");
+const bcrypt = require("bcryptjs")
 
 //generate uuid
 
@@ -65,17 +66,25 @@ exports.sellerLogin = catchAsyncErrors(async (req, res, next) => {
     [email]
   );
 
-  if (seller.length > 0 && pass[0].password === password) {
-    const seller_id = seller[0].id
-    const [sellerProducts] = await pool.execute(
-      "SELECT * FROM products WHERE seller_id = ? AND is_deleted = 0",
-      [seller_id]
-    )
-    const [deletedProducts] = await pool.execute(
-      "SELECT * FROM products WHERE seller_id = ? AND is_deleted = 1",
-      [seller_id]
-    )
-    sendSellerToken(seller, sellerProducts, deletedProducts, 201, res);
+  if (seller.length > 0) {
+    const isMatch = await bcrypt.compare(password, pass[0].password)
+    if(isMatch){
+        const seller_id = seller[0].id
+        const [sellerProducts] = await pool.execute(
+          "SELECT * FROM products WHERE seller_id = ? AND is_deleted = 0",
+          [seller_id]
+        )
+        const [deletedProducts] = await pool.execute(
+          "SELECT * FROM products WHERE seller_id = ? AND is_deleted = 1",
+          [seller_id]
+        )
+        sendSellerToken(seller, sellerProducts, deletedProducts, 201, res);
+    }else{
+        res.status(400).json({
+          success: false,
+          message: "Invalid email or password.",
+        });
+    }
   } else {
     res.status(400).json({
       success: false,

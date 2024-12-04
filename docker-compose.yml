@@ -1,0 +1,25 @@
+services:
+  mysql-db:
+    image: mysql:8.0.37
+    container_name: mysql-db
+    environment:
+      MYSQL_DATABASE: "fullstack_ecommerce"
+      MYSQL_USER: root
+      MYSQL_ROOT_PASSWORD: 200322
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  genie_backend:
+    image: genie_backend
+    container_name: genie_backend
+    ports:
+      - "4000:4000"
+    environment:
+      DB_HOST: mysql-db 
+    depends_on:
+      - mysql-db
+
+volumes:
+  mysql-data:

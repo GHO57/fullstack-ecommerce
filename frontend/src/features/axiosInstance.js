@@ -4,7 +4,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 const axiosInstance = axios.create({
     // baseURL: '/api/v1',
-    timeout: 10000
+    timeout: 30000
 })
 
 axiosInstance.interceptors.response.use(

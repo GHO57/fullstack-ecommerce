@@ -7,7 +7,7 @@ import { PiShoppingCartSimple, PiStorefrontLight  } from "react-icons/pi";
 import { RiShieldUserLine } from "react-icons/ri";
 import { SiGoogleforms } from "react-icons/si";
 import { MdSpaceDashboard, MdOutlineStorefront } from "react-icons/md";
-import { FaShop, FaTrash, FaUserShield, FaUser } from "react-icons/fa6";
+import { FaShop, FaTrash, FaUserShield, FaUser, FaStore } from "react-icons/fa6";
 import { TfiPackage } from "react-icons/tfi";
 import { useDispatch, useSelector } from 'react-redux';
 import { Login } from "../../components"
@@ -78,11 +78,15 @@ const header = () => {
                   <p>Admin</p>
                 </Link>
             )}    
-            {isSellerAuthenticated && (
+            {isSellerAuthenticated ? (
                 <Link to="/seller/dashboard" className={`flex-center gap-[0.5rem] transition-colors duration-100 hover:text-primary`}>
                   <PiStorefrontLight className='text-[18px]' />
                   <p>Seller</p>
                 </Link>
+            ) : (
+              <Link to="/seller" className='flex-center text-nowrap gap-[0.6rem] hover:text-primary transition duration-100'>
+                <PiStorefrontLight className='text-[18px]' />Sell on Genie
+              </Link>
             )} 
               <div className={`relative ${popLogin ? 'z-[-1]' : 'z-0'} flex-center h-full`} onMouseEnter={() => handleMouseHover(true)} onMouseLeave={() => handleMouseHover(false)}>
                 <div className={`flex-center gap-[0.5rem] transition-colors duration-100 ${showDropDown ? "text-primary" : ""}`}>

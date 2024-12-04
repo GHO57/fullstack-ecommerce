@@ -89,9 +89,9 @@ const SellerLogin = () => {
                                     <TextField id="outlined" label="Email" type='email' variant="outlined" size='normal' InputProps={{ sx: { fontFamily: 'Montserrat, sans-serif', '& .MuiOutlinedInput-notchedOutline': { borderRadius: '2px' } } }} InputLabelProps={{ sx: { fontFamily: 'Montserrat, sans-serif' } }} fullWidth value={email} onChange={handleEmailChange} required />
                                     <TextField id="outlined" label="Password" type='password' variant="outlined" size='normal' InputProps={{ sx: { fontFamily: 'Montserrat, sans-serif', '& .MuiOutlinedInput-notchedOutline': { borderRadius: '2px' } } }} InputLabelProps={{ sx: { fontFamily: 'Montserrat, sans-serif' } }} fullWidth value={password} onChange={handlePasswordChange} required />
                                 </div>
-                                <div className='flex justify-end text-[14px]'>
+                                {/* <div className='flex justify-end text-[14px]'>
                                     <Link className='hover:text-primary'>forgot password?</Link>
-                                </div>
+                                </div> */}
                                 <div className='flex flex-col w-full gap-[1.5rem]'>
                                     <button className='btn-fill w-full h-[3.1rem] rounded-[2px] text-[18px]'>
                                     Login

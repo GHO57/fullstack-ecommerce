@@ -72,7 +72,7 @@ const Home = () => {
                 <div className="flex-center flex-col gap-[3rem] overflow-auto">
                   <div ref={ref} className="flex md:grid lg:grid md:grid-cols-3 lg:grid-cols-4 gap-[2rem]">
                     {products.slice(0, 8).map((product) => (
-                      <ProductCard product={product}/>
+                      <ProductCard key={product.id} product={product}/>
                     ))}
                   </div>
                 </div>

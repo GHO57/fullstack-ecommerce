@@ -5,7 +5,7 @@ const { v4: uuidv4 } = require("uuid");
 const { sendAdminToken } = require("../utils/jwtToken")
 const sendEmail = require("../utils/sendMail")
 const crypto = require("crypto")
-
+const bcrypt = require("bcryptjs")
 
 //generate random uuid
 
@@ -39,8 +39,17 @@ exports.adminLogin = catchAsyncErrors(async(req, res, next) => {
     const [admin] = await pool.execute('SELECT * FROM admins WHERE email = ?', [email])
     const [pass] = await pool.execute('SELECT password FROM admins WHERE email = ?', [email])
 
-    if(admin.length > 0 && pass[0].password === password){
-        sendAdminToken(admin, 201, res)        
+    if(admin.length > 0){
+        const isMatch = await bcrypt.compare(password, pass[0].password)
+
+        if(isMatch){
+            sendAdminToken(admin, 201, res)        
+        }else{
+            res.status(400).json({
+                success: false,
+                message: "Invalid email or password"
+            })
+        }
     }else{
         res.status(400).json({
             success: false,
@@ -215,11 +224,12 @@ exports.addNewAdmin = catchAsyncErrors(async(req, res, next) => {
         }else{
             const uuid = generate_uuid()
             const password = generateRandomPassword(20)
+            const hashedPassword = await bcrypt.hash(password, 10)
             const message = `You have been added as ${role}
                                path: /admin/login
                                password: ${password}
                             `
-            await connection.execute('INSERT INTO admins (id, fullname, role, email, password) VALUES(?, ?, ?, ?, ?)', [uuid, fullname, role, email, password])
+            await connection.execute('INSERT INTO admins (id, fullname, role, email, password) VALUES(?, ?, ?, ?, ?)', [uuid, fullname, role, email, hashedPassword])
             const [adminUser] = await connection.execute('SELECT * FROM admins WHERE id = ?', [uuid])
     
             try{
@@ -376,7 +386,6 @@ exports.deleteSeller = catchAsyncErrors(async(req, res, next) => {
 exports.approveSeller = catchAsyncErrors(async(req, res, next) => {
     const { email, gstin } = req.body
 
-
     if(!email || !gstin){
         return next(new errorHandler("Enter all the required details", 400))
     }
@@ -396,13 +405,15 @@ exports.approveSeller = catchAsyncErrors(async(req, res, next) => {
             if(appliedSeller.length > 0){
                 const uuid = generate_uuid()
                 const password = generateRandomPassword(20)
+                const sellerHashedPassword = await bcrypt.hash(password, 10)
                 const message = `You're GSTIN has been approved and you can sell products 
                                    login credentials:
                                    email: your_email
                                    password: ${password}
-                                `
+                                   `
+                console.log(password)
                 await connection.execute('DELETE FROM seller_applications WHERE gstin = ? && email = ?', [gstin, email])
-                await connection.execute('INSERT INTO sellers (id, full_name, email, password, company_name, company_address, gstin) VALUES (?, ?, ?, ?, ?, ?, ?)',[uuid, appliedSeller[0].full_name, appliedSeller[0].email, password, appliedSeller[0].company_name, appliedSeller[0].company_address, appliedSeller[0].gstin])
+                await connection.execute('INSERT INTO sellers (id, full_name, email, password, company_name, company_address, gstin) VALUES (?, ?, ?, ?, ?, ?, ?)',[uuid, appliedSeller[0].full_name, appliedSeller[0].email, sellerHashedPassword, appliedSeller[0].company_name, appliedSeller[0].company_address, appliedSeller[0].gstin])
 
                 try{
                     await sendEmail({

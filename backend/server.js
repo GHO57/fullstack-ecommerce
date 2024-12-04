@@ -1,6 +1,6 @@
 const app = require("./app")
 const dotenv = require("dotenv")
-const { db_connection } = require("./config/database")
+const { dbConnectionWithRetry } = require("./config/database")
 const path = require("path")
 const express = require("express")
 
@@ -10,9 +10,21 @@ dotenv.config({
     path: "./config/config.env"
 })
 
-//checking database connection status
+const startServer = async() => {
+    try{
+        //check database connection
+        await dbConnectionWithRetry()
 
-db_connection()
+        //start the server
+        const server = app.listen(process.env.PORT, () => {
+            console.log(`\x1b[32m+\x1b[0m Server is running at http://localhost:${process.env.PORT}/`)
+        })
+
+    }catch(error){
+        console.error("\x1b[31m- Failed to start the server: \x1b[0m", error.message)
+        process.exit(1)
+    }
+}
 
 app.use(express.static(path.join(__dirname, '../frontend/dist')));
 
@@ -21,11 +33,8 @@ app.get('*', (req, res) => {
 });
 
 
-//running the server
 
-const server = app.listen(process.env.PORT, () => {
-    console.log(`+ Server is running at http://localhost:${process.env.PORT}/`)
-})
+startServer()
 
 //handling uncaught exception
 
@@ -37,8 +46,9 @@ process.on("uncaughtException", (err) => {
 
 //unhandled promise rejection
 
-process.on("unhandledRejection", (err) => {
-    console.log(`- Error : ${err.message}`)
+process.on("unhandledRejection", (err, promise) => {
+    // console.log(`- Error : ${err.message}`)
+    console.error('Unhandled Rejection at:', promise, 'reason:', err);
     console.log(`\n- Shutting down the server due to unhandled promise rejection`)
     server.close(() => {
         process.exit(1)
