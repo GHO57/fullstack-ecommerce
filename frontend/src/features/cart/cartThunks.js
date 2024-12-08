@@ -103,3 +103,9 @@ export const validateCart = createAsyncThunk("cart/validate", async(thunkAPI) =>
         }
     }
 })
+
+//update cart items stock -- real time
+
+export const updateCartStock = createAsyncThunk("cart/update-stock", async(updates, thunkAPI) => {
+    return updates
+})

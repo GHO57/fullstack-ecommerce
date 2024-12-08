@@ -100,7 +100,7 @@ const AddProduct = ({ popup, setPopup }) => {
     }
 
     useEffect(() => {
-        if(!popup){
+        return () => {
             setName('')
             setDesc('')
             setCategory('')
@@ -109,54 +109,60 @@ const AddProduct = ({ popup, setPopup }) => {
             setStock('')
             setImage(null)
             setImageName('')
+            URL.revokeObjectURL(image)
         }
     }, [popup])
+
+    useEffect(() => {
+        if(image){
+            URL.revokeObjectURL(image)
+        }
+    }, [image])
 
   return (
     <>
         {popup && (
             <div className='z-[10000] fixed left-0 top-0 right-0 w-full h-full bg-[rgba(0,0,0,0.7)] flex-center backdrop-blur-[6px]'>
-                <div className='relative flex-center w-[420px] h-auto bg-white shadow-xl border-lightGray3 border-[1px] rounded-[5px] px-[3rem] py-[2rem]'>
+                <div className='relative flex-center flex-col w-[1200px] h-auto bg-white shadow-xl border-lightGray3 border-[1px] rounded-[5px] px-[3rem] py-[2rem] gap-y-[1.5rem]'>
                     <FontAwesomeIcon 
                         className='z-[100] absolute top-2 right-2 cursor-pointer hover:text-mediumGray2' 
                         onClick={closeAddProduct}
                         icon={faClose}/>
-                    <form className='w-full h-full flex-center flex-col gap-[2rem]' onSubmit={handleAddProductForm}>
-                        <h3 className='text-[30px] font-extrabold text-mediumGray'>Add Product</h3>
-                        <div className='flex-center flex-col gap-[1rem] w-full'>
-                            <Input label="Name" variant='outlined' type="text" size='small' InputProps={{ sx: { fontFamily: 'Montserrat, sans-serif', '& .MuiOutlinedInput-notchedOutline': { borderRadius: '2px' } } }} InputLabelProps={{ sx: { fontFamily: 'Montserrat, sans-serif' } }} fullWidth value={name} onChange={handleNameChange} required />
-                            <Input label="Description" variant="outlined" type='text' multiline rows={3} size='small' InputProps={{ sx: { fontFamily: 'Montserrat, sans-serif', '& .MuiOutlinedInput-notchedOutline': { borderRadius: '2px' } } }} InputLabelProps={{ sx: { fontFamily: 'Montserrat, sans-serif' } }} fullWidth value={desc} onChange={handleDescChange} required />
-                            <select className={`cursor-pointer w-full bg-transparent border-[1px] border-lightGray2 hover:border-mediumGray rounded-[2px] py-[1rem] px-[1rem] ${category === '' ? "text-mediumGray2" : "text-black"} bg-white`} value={category} onChange={handleCategorychange} required>
-                                <option className='text-mediumGray' value="">Category *</option>
-                                {/* <option className='text-mediumGray' value="Food & Grocery">Food & Grocery</option>
-                                <option className='text-mediumGray' value="Clothing">Clothing</option>
-                                <option className='text-mediumGray' value="Electronics">Electronics</option>
-                                <option className='text-mediumGray' value="Bags & Accessories">Bags & Accessories</option>
-                                <option className='text-mediumGray' value="Kids">Kids</option>
-                                <option className='text-mediumGray' value="Pet">Pet</option> */}
-                                {categories.map((category, key) => (
-                                    <option key={key} className='text-mediumGray' value={category}>{category}</option>
-                                ))}
-                            </select>
-                            <Input label="Price" variant='outlined' type="number" size='small' InputProps={{ sx: { fontFamily: 'Montserrat, sans-serif', '& .MuiOutlinedInput-notchedOutline': { borderRadius: '2px' } } }} InputLabelProps={{ sx: { fontFamily: 'Montserrat, sans-serif' } }} fullWidth value={price} onChange={handlePriceChange} required />
-                            <Input label="MRP" variant='outlined' type="number" size='small' InputProps={{ sx: { fontFamily: 'Montserrat, sans-serif', '& .MuiOutlinedInput-notchedOutline': { borderRadius: '2px' } } }} InputLabelProps={{ sx: { fontFamily: 'Montserrat, sans-serif' } }} fullWidth value={mrp} onChange={handleMrpChange} required />
-                            <Input label="Stock" variant='outlined' type="number" size='small' InputProps={{ sx: { fontFamily: 'Montserrat, sans-serif', '& .MuiOutlinedInput-notchedOutline': { borderRadius: '2px' } } }} InputLabelProps={{ sx: { fontFamily: 'Montserrat, sans-serif' } }} fullWidth value={stock} onChange={handleStockChange} required />
-                            <Button
-                                component="label"
-                                role={undefined}
-                                variant="outlined"
-                                tabIndex={-1}
-                                startIcon={imageName ? "" : <CloudUploadIcon />}
-                                sx={{ width: "100%", fontFamily: 'Montserrat, sans-serif' }}
-                            >
-                                {imageName ? <p>{imageName}</p> : "Upload Image file"}
-                                <VisuallyHiddenInput type="file" onChange={handleImageChange} />
-                            </Button>
-                            <Button variant='contained' type='submit' sx={{ width: "100%", height: "2.5rem", fontFamily: 'Montserrat, sans-serif' }}>    
-                                Add
-                            </Button>
-                        </div>
-                    </form>
+                    <h3 className='text-[30px] font-extrabold text-mediumGray'>Add Product</h3>
+                    <div className='flex w-full gap-x-[2rem]'>
+                        <img src={image === null ? '/default_product_img.png' : URL.createObjectURL(image)} className='max-h-[500px] max-w-[500px] w-auto h-auto object-contain' alt="product preview image" title='preview image' />
+                        <form className='w-full h-full flex-center flex-col gap-[2rem] flex-[1]' onSubmit={handleAddProductForm}>
+                            <div className='flex-center flex-col gap-[1rem] w-full'>
+                                <Input label="Name" variant='outlined' type="text" size='medium' InputProps={{ sx: { fontFamily: 'Montserrat, sans-serif', '& .MuiOutlinedInput-notchedOutline': { borderRadius: '2px' } } }} InputLabelProps={{ sx: { fontFamily: 'Montserrat, sans-serif' } }} inputProps={{ maxLength: 150 }} fullWidth value={name} onChange={handleNameChange} required />
+                                <Input label="Description" variant="outlined" type='text' multiline rows={3} size='medium' InputProps={{ sx: { fontFamily: 'Montserrat, sans-serif', '& .MuiOutlinedInput-notchedOutline': { borderRadius: '2px' } } }} InputLabelProps={{ sx: { fontFamily: 'Montserrat, sans-serif' } }} inputProps={{ maxLength: 1200 }} fullWidth value={desc} onChange={handleDescChange} required />
+                                <select className={`cursor-pointer w-full bg-transparent border-[1px] border-lightGray2 hover:border-mediumGray rounded-[2px] py-[1rem] px-[1rem] ${category === '' ? "text-mediumGray2" : "text-black"} bg-white`} value={category} onChange={handleCategorychange} required>
+                                    <option className='text-mediumGray' value="">Category *</option>
+                                    {categories.map((category, key) => (
+                                        <option key={key} className='text-mediumGray' value={category}>{category}</option>
+                                    ))}
+                                </select>
+                                <div className='flex w-full gap-x-[1rem]'>
+                                    <Input label="Price" variant='outlined' type="number" size='medium' InputProps={{ sx: { fontFamily: 'Montserrat, sans-serif', '& .MuiOutlinedInput-notchedOutline': { borderRadius: '2px' } } }} InputLabelProps={{ sx: { fontFamily: 'Montserrat, sans-serif' } }} inputProps={{ maxLength: 10 }} fullWidth value={price} onChange={handlePriceChange} required />
+                                    <Input label="MRP" variant='outlined' type="number" size='medium' InputProps={{ sx: { fontFamily: 'Montserrat, sans-serif', '& .MuiOutlinedInput-notchedOutline': { borderRadius: '2px' } } }} InputLabelProps={{ sx: { fontFamily: 'Montserrat, sans-serif' } }} inputProps={{ maxLength: 10 }} fullWidth value={mrp} onChange={handleMrpChange} required />
+                                </div>
+                                <Input label="Stock" variant='outlined' type="number" size='medium' InputProps={{ sx: { fontFamily: 'Montserrat, sans-serif', '& .MuiOutlinedInput-notchedOutline': { borderRadius: '2px' } } }} InputLabelProps={{ sx: { fontFamily: 'Montserrat, sans-serif' } }} inputProps={{ maxLength: 10 }} fullWidth value={stock} onChange={handleStockChange} required />
+                                <Button
+                                    component="label"
+                                    role={undefined}
+                                    variant="outlined"
+                                    tabIndex={-1}
+                                    startIcon={imageName ? "" : <CloudUploadIcon />}
+                                    sx={{ width: "100%", height: "3rem", fontFamily: 'Montserrat, sans-serif' }}
+                                >
+                                    {imageName ? <p>{imageName}</p> : "Upload Image file"}
+                                    <VisuallyHiddenInput type="file" onChange={handleImageChange} />
+                                </Button>
+                                <Button variant='contained' type='submit' sx={{ width: "100%", height: "3rem", fontFamily: 'Montserrat, sans-serif' }}>    
+                                    Add
+                                </Button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>  
         )}

@@ -172,11 +172,11 @@ const Checkout = () => {
                 navigate(`/checkout/success/${verificationData.razorpay_payment_id}`);
               } else {
                 setButtonLoading(false)
-                toast.error('Payment verification failed. Please contact support.');
+                navigate(`/checkout/failure/${response.razorpay_order_id}`)
               }
             } catch (error) {
               setButtonLoading(false)
-              toast.error(`An error occurred during payment verification. Please try again. ${error}`);
+              navigate(`/checkout/failure/${response.razorpay_order_id}`)
             }
         },
         modal: {
@@ -192,7 +192,7 @@ const Checkout = () => {
 
   const handlePaymentFailure = () => {
     setButtonLoading(false)
-    toast.error("Payment Cancelled or Failed");
+    toast.error("Payment process was not completed. Try again.");
   }
 
   useEffect(() => {

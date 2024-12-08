@@ -5,7 +5,8 @@ import {
     deleteItem,
     loadCart,
     removeFromCart,
-    validateCart
+    validateCart,
+    updateCartStock
 } from './cartThunks'
 
 const initialState = {
@@ -238,6 +239,33 @@ const cartSlice = createSlice({
                     ...state,
                     cartLoading: false
                 }
+            })
+
+
+            //update cart stock pending
+            .addCase(updateCartStock.pending, (state) => {
+                return{
+                    ...state
+                }
+            })
+
+            //update cart stock fulfilled
+            .addCase(updateCartStock.fulfilled, (state, action) => {
+                let updates = action.payload;
+
+                // Proceed with your state update
+                state.cart = state.cart.map(item => {
+                    const update = updates.find(update => update.product_id === item.id);
+                    if (update) {
+                        return { ...item, stock: item.stock - update.product_quantity };
+                    }
+                    return item;
+                });
+            
+                state.totalValidProducts = state.cart.reduce(
+                    (count, item) => (item.stock > 0 ? count + 1 : count),
+                    0
+                );
             })
     }
 })

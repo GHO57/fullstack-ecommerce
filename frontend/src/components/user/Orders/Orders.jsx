@@ -57,7 +57,7 @@ const Orders = () => {
             case 'H2L':
                 return [...orders].sort((a, b) => b.total - a.total);
             default:
-                return orders;
+                return [...orders].sort((a, b) => a.created_at < b.created_at);
         }
     };
 
@@ -95,7 +95,7 @@ const Orders = () => {
                             </Breadcrumbs>
                         </div>
                     </div>
-                    <div className='flex justify-between w-full'>
+                    {/* <div className='flex justify-between w-full'>
                         <div className='flex gap-[1rem]'>
                             <FormControl size='small' sx={{ minWidth: 120 }}>
                                 <InputLabel sx={{ fontFamily: 'Montserrat, sans-serif' }}>Sort By</InputLabel>
@@ -112,7 +112,7 @@ const Orders = () => {
                                 </Select>
                             </FormControl>
                         </div>
-                    </div>
+                    </div> */}
                     <TableContainer sx={{ boxShadow:5 }} component={Paper}>
                         <Table sx={{ minWidth: 650 }} aria-label="orders table"> 
                             <TableHead>

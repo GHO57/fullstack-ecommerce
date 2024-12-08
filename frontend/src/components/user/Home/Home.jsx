@@ -51,7 +51,7 @@ const Home = () => {
         <Loader />
       ) : (
         <div className="flex-center py-[2rem]">
-          <div className="max-w-[1280px] flex flex-col w-full gap-y-[4rem] px-4 md:px-8">
+          <div className="max-w-[1320px] flex flex-col w-full gap-y-[4rem] md:px-8">
             <Carousel items={items} />
             <div className="flex flex-col gap-y-[4rem]">
               <div className="flex flex-col gap-y-[2rem] w-full border-b-[1px] border-b-lightGray3 pb-[4rem]">
@@ -70,7 +70,7 @@ const Home = () => {
                   </Link>
                 </div>
                 <div className="flex-center flex-col gap-[3rem] overflow-auto">
-                  <div ref={ref} className="flex md:grid lg:grid md:grid-cols-3 lg:grid-cols-4 gap-[2rem]">
+                  <div ref={ref} className="flex md:grid lg:grid md:grid-cols-3 lg:grid-cols-4 gap-[1rem]">
                     {products.slice(0, 8).map((product) => (
                       <ProductCard key={product.id} product={product}/>
                     ))}

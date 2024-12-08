@@ -49,7 +49,7 @@ const ManageAdmins = () => {
 
     const dispatch = useDispatch()
 
-    const { adminLoading, adminMessage, adminError, allUsers, allAdmins, allSellers, isAuthenticated } = useSelector((state) => state.admin)
+    const { adminLoading, adminMessage, adminError, allUsers, admin:adminUser, allAdmins, allSellers, isAuthenticated } = useSelector((state) => state.admin)
 
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -367,7 +367,9 @@ const ManageAdmins = () => {
                                         <TableCell align="right">
                                             <div className='flex gap-[0.4rem] justify-center'>
                                                 <Tooltip title="update role" placement="left" arrow>
-                                                    <IconButton onClick={() => {handleUpdateModalOpen(admin.email, admin.role)}} aria-label='update' size='medium'><ModeEditIcon fontSize='inherit' /></IconButton>
+                                                    {adminUser.filter(a => a.id !== admin.id).map((a) => (
+                                                        <IconButton key={admin.id} onClick={() => {handleUpdateModalOpen(admin.email, admin.role)}} aria-label='update' size='medium'><ModeEditIcon fontSize='inherit' /></IconButton>
+                                                    ))}
                                                 </Tooltip>
                                                 <Tooltip title="delete" placement="right" arrow>
                                                     <IconButton onClick={() => {handleDeleteModalOpen(admin.id)}} aria-label='delete' size='medium'><DeleteIcon fontSize='inherit' /></IconButton>

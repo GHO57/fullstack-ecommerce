@@ -10,8 +10,8 @@ import {
     getAllOrders,
     getOrderItems,
     updateAddress,
-    updateFullName
-} from './userThunks'
+    updateFullName,
+} from "./userThunks";
 import { clearCartState } from "../cart/cartSlice";
 
 const initialState = {
@@ -27,17 +27,17 @@ const initialState = {
     newUser: false,
     OTPSent: false,
     message: null,
-    error: null
-}
+    error: null,
+};
 
 const userSlice = createSlice({
-    name: 'user',
+    name: "user",
     initialState,
     reducers: {
         clearUserMessage: (state) => {
             state.message = null;
         },
-        
+
         clearUserError: (state) => {
             state.error = null;
         },
@@ -46,7 +46,7 @@ const userSlice = createSlice({
         builder
             //sendotp pending
             .addCase(sendotp.pending, (state) => {
-                return{
+                return {
                     ...state,
                     loading: false,
                     loadingLogin: true,
@@ -55,40 +55,40 @@ const userSlice = createSlice({
                     newUser: false,
                     OTPSent: false,
                     message: null,
-                    error: null
-                }
+                    error: null,
+                };
             })
 
             //sendotp fulfilled
             .addCase(sendotp.fulfilled, (state, action) => {
-                return{
+                return {
                     ...state,
                     loading: false,
                     loadingLogin: false,
                     isAuthenticated: false,
-                    newUser: false, 
+                    newUser: false,
                     OTPSent: true,
                     message: action.payload,
-                    error: null
-                }
+                    error: null,
+                };
             })
 
             //sendotp rejected
             .addCase(sendotp.rejected, (state, action) => {
-                return{
+                return {
                     ...state,
                     loading: false,
                     loadingLogin: false,
                     isAuthenticated: false,
                     newUser: false,
                     OTPSent: false,
-                    error: action.payload
-                }
+                    error: action.payload,
+                };
             })
 
             //loginsignup pending
             .addCase(loginsignup.pending, (state) => {
-                return{
+                return {
                     ...state,
                     loading: false,
                     loadingLogin: true,
@@ -97,14 +97,14 @@ const userSlice = createSlice({
                     newUser: false,
                     OTPSent: false,
                     message: null,
-                    error: null
-                }
+                    error: null,
+                };
             })
 
             //loginsignup fulfilled
             .addCase(loginsignup.fulfilled, (state, action) => {
-                if(action.payload.newUser){
-                    return{
+                if (action.payload.newUser) {
+                    return {
                         ...state,
                         loading: false,
                         loadingLogin: false,
@@ -112,10 +112,10 @@ const userSlice = createSlice({
                         newUser: true,
                         OTPSent: false,
                         user: action.payload.newUser,
-                        error: null
-                    }
-                }else{
-                    return{
+                        error: null,
+                    };
+                } else {
+                    return {
                         ...state,
                         loading: false,
                         loadingLogin: false,
@@ -125,26 +125,27 @@ const userSlice = createSlice({
                         user: action.payload.user,
                         OTPSent: false,
                         message: null,
-                        error: null
-                    }
+                        error: null,
+                    };
                 }
             })
 
             //loginsignup rejected
             .addCase(loginsignup.rejected, (state, action) => {
-                return{
+                return {
                     ...state,
                     loading: false,
                     loadingLogin: false,
                     isAuthenticated: false,
+                    isLoggingIn: false,
                     OTPSent: false,
-                    error: action.payload
-                }
+                    error: action.payload,
+                };
             })
 
             //signupuser pending
             .addCase(signupuser.pending, (state) => {
-                return{
+                return {
                     ...state,
                     loading: false,
                     loadingLogin: true,
@@ -153,29 +154,29 @@ const userSlice = createSlice({
                     newUser: true,
                     OTPSent: false,
                     message: null,
-                    error: null
-                }
+                    error: null,
+                };
             })
 
             //signupuser fulfilled
             .addCase(signupuser.fulfilled, (state, action) => {
-                    return{
-                        ...state,
-                        loading: false,
-                        loadingLogin: false,
-                        isAuthenticated: true,
-                        isLoggingIn: true,
-                        newUser: false,
-                        user: action.payload.user,
-                        OTPSent: false,
-                        message: `Welcome ${action.payload.user[0].fullname}`,
-                        error: null
-                }
+                return {
+                    ...state,
+                    loading: false,
+                    loadingLogin: false,
+                    isAuthenticated: true,
+                    isLoggingIn: true,
+                    newUser: false,
+                    user: action.payload.user,
+                    OTPSent: false,
+                    message: `Welcome ${action.payload.user[0].fullname}`,
+                    error: null,
+                };
             })
 
             //signupuser rejected
             .addCase(signupuser.rejected, (state, action) => {
-                return{
+                return {
                     ...state,
                     loading: false,
                     loadingLogin: false,
@@ -183,158 +184,158 @@ const userSlice = createSlice({
                     newUser: false,
                     OTPSent: false,
                     user: null,
-                    error: action.payload
-                }
+                    error: action.payload,
+                };
             })
 
             //add Delivery Address pending
             .addCase(addDeliveryAddress.pending, (state) => {
-                return{
-                    ...state, 
+                return {
+                    ...state,
                     loading: true,
                     message: null,
-                    error: null
-                }
+                    error: null,
+                };
             })
 
             //add Delivery Address fulfilled
             .addCase(addDeliveryAddress.fulfilled, (state, action) => {
-                return{
-                    ...state, 
+                return {
+                    ...state,
                     loading: false,
                     deliveryAddress: action.payload.deliveryAddress || [],
-                    allDeliveryAddress : action.payload.allDeliveryAddress || [],
-                    message: action.payload.message
-                }
+                    allDeliveryAddress: action.payload.allDeliveryAddress || [],
+                    message: action.payload.message,
+                };
             })
-            
+
             //add delivery address rejected
             .addCase(addDeliveryAddress.rejected, (state, action) => {
-                return{
-                    ...state, 
+                return {
+                    ...state,
                     loading: false,
                     deliveryAddress: [],
                     allDeliveryAddress: [],
-                    error: action.payload
-                }
+                    error: action.payload,
+                };
             })
 
             //delete Delivery Address pending
             .addCase(deleteDeliveryAddress.pending, (state) => {
-                return{
-                    ...state, 
+                return {
+                    ...state,
                     loading: true,
                     message: null,
-                    error: null
-                }
+                    error: null,
+                };
             })
 
             //delete Delivery Address fulfilled
             .addCase(deleteDeliveryAddress.fulfilled, (state, action) => {
-                return{
-                    ...state, 
+                return {
+                    ...state,
                     loading: false,
                     deliveryAddress: action.payload.deliveryAddress || [],
                     allDeliveryAddress: action.payload.allDeliveryAddress || [],
-                    message: action.payload.message
-                }
+                    message: action.payload.message,
+                };
             })
-            
+
             //delete delivery address rejected
             .addCase(deleteDeliveryAddress.rejected, (state, action) => {
-                return{
-                    ...state, 
+                return {
+                    ...state,
                     loading: false,
                     deliveryAddress: [],
-                    error: action.payload
-                }
+                    error: action.payload,
+                };
             })
 
             //get all orders pending
             .addCase(getAllOrders.pending, (state) => {
-                return{
-                    ...state, 
+                return {
+                    ...state,
                     loading: true,
                     allOrders: [],
                     orderItems: [],
                     message: null,
-                    error: null
-                }
+                    error: null,
+                };
             })
 
             //get all orders fulfilled
             .addCase(getAllOrders.fulfilled, (state, action) => {
-                return{
-                    ...state, 
+                return {
+                    ...state,
                     loading: false,
                     allOrders: action.payload.orders || [],
                     deliveryAddress: action.payload.deliveryAddress || [],
                     allDeliveryAddress: action.payload.allDeliveryAddress || [],
-                    message: action.payload.message
-                }
+                    message: action.payload.message,
+                };
             })
-            
+
             //get all orders rejected
             .addCase(getAllOrders.rejected, (state, action) => {
-                return{
-                    ...state, 
+                return {
+                    ...state,
                     loading: false,
                     allOrders: [],
-                    error: action.payload
-                }
+                    error: action.payload,
+                };
             })
 
             //get order items pending
             .addCase(getOrderItems.pending, (state) => {
-                return{
-                    ...state, 
+                return {
+                    ...state,
                     loading: true,
                     orderItems: [],
                     message: null,
-                    error: null
-                }
+                    error: null,
+                };
             })
 
             //get order items fulfilled
             .addCase(getOrderItems.fulfilled, (state, action) => {
-                return{
-                    ...state, 
+                return {
+                    ...state,
                     loading: false,
                     orderItems: action.payload.orderItems || [],
-                    message: action.payload.message
-                }
+                    message: action.payload.message,
+                };
             })
-            
+
             //get order items rejected
             .addCase(getOrderItems.rejected, (state, action) => {
-                return{
-                    ...state, 
+                return {
+                    ...state,
                     loading: false,
                     orderItems: [],
-                    error: action.payload
-                }
+                    error: action.payload,
+                };
             })
 
             //loaduser pending
             .addCase(loaduser.pending, (state) => {
-                return{
-                    ...state, 
+                return {
+                    ...state,
                     loading: true,
-                    loadingLogin:false, 
+                    loadingLogin: false,
                     isAuthenticated: false,
                     isLoggingIn: false,
                     newUser: false,
                     user: null,
                     OTPSent: false,
                     message: null,
-                    error: null
-                }
+                    error: null,
+                };
             })
 
             //loaduser fulfilled
             .addCase(loaduser.fulfilled, (state, action) => {
-                return{
-                    ...state, 
+                return {
+                    ...state,
                     loading: false,
                     loadingLogin: false,
                     isAuthenticated: true,
@@ -344,14 +345,14 @@ const userSlice = createSlice({
                     deliveryAddress: action.payload.deliveryAddress || [],
                     allDeliveryAddress: action.payload.allDeliveryAddress || [],
                     OTPSent: false,
-                    error: null
-                }
+                    error: null,
+                };
             })
-            
+
             //loaduser rejected
             .addCase(loaduser.rejected, (state, action) => {
-                return{
-                    ...state, 
+                return {
+                    ...state,
                     loading: false,
                     loadingLogin: false,
                     isAuthenticated: false,
@@ -360,28 +361,28 @@ const userSlice = createSlice({
                     deliveryAddress: [],
                     allDeliveryAddress: [],
                     OTPSent: false,
-                    error: action.payload
-                }
+                    error: action.payload,
+                };
             })
 
             //logoutuser pending
             .addCase(logoutuser.pending, (state) => {
-                return{
-                    ...state, 
+                return {
+                    ...state,
                     loading: true,
-                    loadingLogin:false, 
+                    loadingLogin: false,
                     isAuthenticated: true,
                     newUser: false,
                     OTPSent: false,
                     message: null,
-                    error: null
-                }
+                    error: null,
+                };
             })
 
             //logoutuser fulfilled
             .addCase(logoutuser.fulfilled, (state, action) => {
-                return{
-                    ...state, 
+                return {
+                    ...state,
                     loading: false,
                     loadingLogin: false,
                     isAuthenticated: false,
@@ -394,77 +395,73 @@ const userSlice = createSlice({
                     message: action.payload.message,
                     OTPSent: false,
                     error: null,
-                }
+                };
             })
-            
+
             //logoutuser rejected
             .addCase(logoutuser.rejected, (state, action) => {
-                return{
-                    ...state, 
+                return {
+                    ...state,
                     loading: false,
                     loadingLogin: false,
                     isAuthenticated: true,
                     newUser: false,
                     OTPSent: false,
-                    error: action.payload
-                }
+                    error: action.payload,
+                };
             })
-             //add Delivery Address pending
-             .addCase(updateAddress.pending, (state) => {
-                return{
-                    ...state, 
+            //add Delivery Address pending
+            .addCase(updateAddress.pending, (state) => {
+                return {
+                    ...state,
                     loading: true,
                     message: null,
-                    error: null
-                }
+                    error: null,
+                };
             })
             .addCase(updateAddress.fulfilled, (state, action) => {
-                return{
+                return {
                     ...state,
                     loading: false,
-                    deliveryAddress : action.payload.deliveryAddress,
-                    allDeliveryAddress : action.payload.deliveryAddress,
+                    deliveryAddress: action.payload.deliveryAddress,
+                    allDeliveryAddress: action.payload.deliveryAddress,
                     message: action.payload.message,
                     loading: false,
-
-                }
+                };
             })
             //add delivery address rejected
             .addCase(updateAddress.rejected, (state, action) => {
-                return{
-                    ...state, 
+                return {
+                    ...state,
                     loading: false,
-                    error: action.payload
-                }
+                    error: action.payload,
+                };
             })
             // Handle the full name update
             .addCase(updateFullName.pending, (state) => {
-                return{
-                    ...state, 
+                return {
+                    ...state,
                     loading: true,
                     message: null,
-                    error: null
-                }
+                    error: null,
+                };
             })
             .addCase(updateFullName.fulfilled, (state, action) => {
-                return{
+                return {
                     ...state,
                     loading: false,
                     user: action.payload.user,
-                }
-                
+                };
             })
             .addCase(updateFullName.rejected, (state, action) => {
                 return {
                     ...state,
                     loading: false,
-                    error: action.payload,    
-                }            
-            })
-    } 
-})
-
+                    error: action.payload,
+                };
+            });
+    },
+});
 
 export const { clearUserMessage, clearUserError } = userSlice.actions;
-export default userSlice.reducer
-
+export default userSlice.reducer;

@@ -1,44 +1,44 @@
-const catchAsyncErrors = require("../middleware/catchAsynErrors")
-const { pool } = require("../config/database")
-const errorHandler = require("../utils/errorHandler")
-
+const catchAsyncErrors = require("../middleware/catchAsynErrors");
+const { pool } = require("../config/database");
+const errorHandler = require("../utils/errorHandler");
 
 //get all products
 
-exports.getAllProducts = catchAsyncErrors(async(req, res, next) => {
-    
-    try{
-        const { page, limit, sortBy, sortOrder, category, searchTerm } = req.query;  
+exports.getAllProducts = catchAsyncErrors(async (req, res, next) => {
+    try {
+        const { page, limit, sortBy, sortOrder, category, searchTerm } = req.query;
 
         //pagination setup
-        const pageNumber = parseInt(page, 10) || 1
-        const limitNumber = parseInt(limit, 10) || 10
-        const offset = (pageNumber - 1) * limitNumber
-
+        const pageNumber = parseInt(page, 10) || 1;
+        const limitNumber = parseInt(limit, 10) || 10;
+        const offset = (pageNumber - 1) * limitNumber;
 
         //sorting setup
-        const validSortFields = ['price', 'name', 'created_at']
-        const order = ['asc', 'desc']
-        const sortField = validSortFields.includes(sortBy) ? sortBy : "created_at"
-        const sortDirection = order.includes(sortOrder) ? sortOrder : "asc"
+        const validSortFields = ["price", "name", "created_at"];
+        const order = ["asc", "desc"];
+        const sortField = validSortFields.includes(sortBy) ? sortBy : "created_at";
+        const sortDirection = order.includes(sortOrder) ? sortOrder : "asc";
 
         //building the sql where clause for filtering
-        let filterConditions = []
-        let queryParams = []
+        let filterConditions = [];
+        let queryParams = [];
 
-        if(category && Array.isArray(category) && category.length > 0){
-            const categoryPlaceholders = category.map(() => '?').join(', ')
-            filterConditions.push(`category IN (${categoryPlaceholders})`)
-            queryParams.push(...category)
+        if (category && Array.isArray(category) && category.length > 0) {
+            const categoryPlaceholders = category.map(() => "?").join(", ");
+            filterConditions.push(`category IN (${categoryPlaceholders})`);
+            queryParams.push(...category);
         }
 
-        if(searchTerm){
-            filterConditions.push('name LIKE ?')
-            queryParams.push(`%${searchTerm}%`)
+        if (searchTerm) {
+            filterConditions.push("name LIKE ?");
+            queryParams.push(`%${searchTerm}%`);
         }
 
         //combine where clause with pagination, sorting and filtering
-        const whereClause = filterConditions.length > 0 ? `WHERE is_deleted = 0 AND ${filterConditions.join(' AND ')}`: `WHERE is_deleted = 0`
+        const whereClause =
+            filterConditions.length > 0
+                ? `WHERE is_deleted = 0 AND ${filterConditions.join(" AND ")}`
+                : `WHERE is_deleted = 0`;
 
         // Get filtered total count
         const [filteredTotal] = await pool.execute(
@@ -53,48 +53,50 @@ exports.getAllProducts = catchAsyncErrors(async(req, res, next) => {
             [...queryParams, String(limitNumber), String(offset)]
         );
 
-        const totalPages = Math.ceil(filteredCount/limit)
-        
-        if(allProducts.length > 0) {
+        const totalPages = Math.ceil(filteredCount / limit);
+
+        if (allProducts.length > 0) {
             res.status(200).json({
                 success: true,
                 allProducts,
                 pagination: {
-                    totalCount : filteredCount,
+                    totalCount: filteredCount,
                     totalPages,
                     currentPage: Number(page),
-                    perPage: Number(limit)
-                }
-            })
-        }else{
-            return next(new errorHandler("No products found", 404))
+                    perPage: Number(limit),
+                },
+            });
+        } else {
+            return next(new errorHandler("No products found", 404));
         }
-    }catch(error){
-        return next(new errorHandler(`Something went wrong`, 500))
+    } catch (error) {
+        return next(new errorHandler(`Something went wrong`, 500));
     }
-})
+});
 
 //get product details
 
-exports.getProductDetails = catchAsyncErrors(async(req, res, next) => {
-    const { product_id } = req.params
+exports.getProductDetails = catchAsyncErrors(async (req, res, next) => {
+    const { product_id } = req.params;
 
-    if(!product_id){
-        return next(new errorHandler("product id not provided", 400))
+    if (!product_id) {
+        return next(new errorHandler("product id not provided", 400));
     }
 
-    try{
-        const [productDetails] = await pool.execute('SELECT * FROM products WHERE id = ?', [product_id])
+    try {
+        const [productDetails] = await pool.execute("SELECT * FROM products WHERE id = ?", [
+            product_id,
+        ]);
 
-        if(productDetails.length > 0){
+        if (productDetails.length > 0) {
             res.status(200).json({
                 success: true,
-                productDetails
-            })
-        }else{
-            return next(new errorHandler("Product not found" ,404))
+                productDetails,
+            });
+        } else {
+            return next(new errorHandler("Product not found", 404));
         }
-    }catch(error){
-        return next(new errorHandler(`Something went wrong`, 500))
+    } catch (error) {
+        return next(new errorHandler(`Something went wrong`, 500));
     }
-})
+});

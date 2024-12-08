@@ -7,8 +7,10 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import { addToCart, deleteItem, loadCart, removeFromCart } from '../../../features/cart/cartThunks';
 import { Link, useNavigate } from 'react-router-dom';
 import ButtonLoader from '../../../layouts/ButtonLoader/ButtonLoader'
+import useCartSocket from '../../../hooks/useCartSocket';
 
 const Cart = () => {
+    useCartSocket()
 
     const dispatch = useDispatch()
     const navigate = useNavigate()
@@ -83,6 +85,7 @@ const Cart = () => {
     useEffect(() => {
         dispatch(loadCart())
     }, [dispatch])
+
     
     return (
     <>
@@ -118,19 +121,24 @@ const Cart = () => {
                                                 <TableCell sx={{ ...table_body_cell_properties, ...truncation_properties, maxWidth: 300 }} align='left'>
                                                     <div className='flex items-center w-full gap-[1.5rem]'>
                                                         <div className='max-w-[60px] max-h-[60px]'>
-                                                            <img className='w-full h-full' src={item.image_url} alt={`${item.name} image`} />
+                                                            <img className='w-full h-full object-contain' src={item.image_url} alt={`${item.name} image`} />
                                                         </div>
                                                         <div className='overflow-hidden '>
                                                             <p className='font-semibold overflow-hidden text-ellipsis whitespace-nowrap'>{item.name}</p>
                                                             <p className='text-[12px] font-normal overflow-hidden text-ellipsis whitespace-nowrap'>ID: {item.id}</p>
                                                             <div className='flex gap-[1.5rem]'>
-                                                                <button className='mt-[1rem] font-semibold text-[13px] hover:text-primary transition-colors duration-100'>
+                                                                {/* <button className='mt-[1rem] font-semibold text-[13px] hover:text-primary transition-colors duration-100'>
                                                                     MOVE TO WISHLIST
-                                                                </button>
+                                                                </button> */}
                                                                 <button onClick={() => handleDeleteItem(item.id)} className='mt-[1rem] font-semibold text-[13px] hover:text-primary transition-colors duration-100'>
                                                                     REMOVE
                                                                 </button>
                                                             </div>
+                                                            {(item.stock <=5 && item.stock > 0) && (
+                                                                <p className='text-[13px] font-semibold text-primary mt-[0.5rem]'>
+                                                                    Only {item.stock} items are left
+                                                                </p>
+                                                            )}
                                                         </div>
                                                     </div>
                                                 </TableCell>

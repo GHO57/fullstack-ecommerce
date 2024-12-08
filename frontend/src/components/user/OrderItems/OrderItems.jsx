@@ -107,7 +107,7 @@ const OrderItems = () => {
                                                 <div className='max-w-[50px]'>
                                                     <img className='w-full h-full' src={item.image_url} alt={`${item.name} image`} />
                                                 </div>
-                                                <div className='overflow-hidden'>
+                                                <div className='overflow-hidden max-w-[300px]'>
                                                     <p className='font-semibold overflow-hidden text-ellipsis whitespace-nowrap'>{item.name}</p>
                                                     <p className='text-[12px] font-normal overflow-hidden text-ellipsis whitespace-nowrap'>ID: {item.id}</p>
                                                 </div>

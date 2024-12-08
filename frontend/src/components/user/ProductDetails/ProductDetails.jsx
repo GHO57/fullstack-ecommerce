@@ -14,6 +14,7 @@ import ProductCard from '../../../layouts/ProductCard/ProductCard';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import { addToWishlist, removeFromWishlist } from '../../../features/wishlist/wishlistThunks';
+import LinesEllipsis from 'react-lines-ellipsis'
 
 const renderButton = () => {
   if (product.is_deleted === 1) {
@@ -70,6 +71,7 @@ const ProductDetails = () => {
 
   const [categoryName, setCategoryName] = useState('')
   const [shuffledProducts, setShuffledProducts] = useState([]);
+  const [isExpanded, setIsExpanded] = useState(false)
 
   const handleRemoveWishlistProduct = (product_id) => {
       dispatch(removeFromWishlist(product_id))
@@ -127,135 +129,138 @@ const ProductDetails = () => {
       ) : (
         <>
           <div className='w-full flex-center'>
-              <div className='flex justify-start items-start max-w-[1200px] w-full mt-[1rem]'>
-                  <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
-                      <Link to="/" className='hover:underline ' color="inherit">
-                          Home
-                      </Link>
-                      <p className='text-primary text-ellipsis whitespace-nowrap overflow-hidden max-w-[170px]'>{productDetails.map((product) => product.name)}</p>
-                  </Breadcrumbs>
-              </div>
-          </div>
-          <div className='flex justify-center w-full '>
-            <div className='max-w-[1100px] w-full flex'>
-              {productDetails.map((product, key) => (
-                <div key={product.id} className='flex gap-[3rem]'>
-                  <div className='flex-center'>
-                    <img className='min-w-[450px] max-w-[450px] flex-1 p-[0.5rem] rounded-[10px]' src={product.image_url} alt={product.name} />
+            <div className='w-full max-w-[1200px]'>
+              <div className='w-full flex-center'>
+                  <div className='flex justify-start items-start w-full mt-[1rem]'>
+                      <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
+                          <Link to="/" className='hover:underline ' color="inherit">
+                              Home
+                          </Link>
+                          <p className='text-primary text-ellipsis whitespace-nowrap overflow-hidden max-w-[170px]'>{productDetails.map((product) => product.name)}</p>
+                      </Breadcrumbs>
                   </div>
-                  <div className='flex flex-col py-[2rem] gap-[2rem] flex-[2]'>
-                    <div className='flex flex-col gap-[0.5rem]'>
-                      <h2 className='font-extrabold text-[35px] '>{product.name}</h2>
-                      <p className='text-lightGray text-[15px]'>#{product.category}</p>
-                      <Rating
-                        name="text-feedback"
-                        value={4}
-                        readOnly
-                        precision={0.5}
-                        size="large"
-                        emptyIcon={<StarIcon style={{ opacity: 0.55 }} fontSize="inherit" />}
-                        />
-                    </div>
-                    <div>
-                      <p className='text-[green] font-medium text-[14px]'>Best Price</p>
-                      <div className="flex items-center gap-[0.7rem]">
-                          <p className="font-[Roboto] text-black font-semibold text-[30px]">₹{new Intl.NumberFormat('en-IN').format(product.price)}</p>
-                          <p className="line-through font-[Roboto] text-[#777] text-[22px] font-normal">{product.mrp ? `₹${new Intl.NumberFormat('en-IN').format(product.mrp)}` : ""}</p>
+              </div>
+              <div className='flex justify-center w-full py-[2rem]'>
+                <div className='w-full flex'>
+                  {productDetails.map((product, key) => (
+                    <div key={product.id} className='flex gap-[3rem]'>
+                      <div className='flex justify-center items-start'>
+                        <img className='min-w-[450px] max-w-[416px] max-h-[416px] object-contain flex-1 p-[0.5rem] rounded-[10px]' src={product.image_url} alt={product.name} />
                       </div>
-                    </div>
-                    <div className='flex flex-col gap-[0.5rem]'>
-                      <p className='font-bold text-[14px] text-darkGray2'>Description</p>
-                      <p className='text-[14px] text-mediumGray '>
-                        {product.description}
-                      </p>
-                    </div>
-                    <div className='flex align-center gap-x-[2rem]'>
-                      <div className='w-fit'>
-                        {(() => {
-                          if (product.is_deleted === 1) {
-                            // Case: Product is deleted
-                            return (
-                              <button
-                                disabled={true}
-                                className="bg-secondary hover:shadow-lg disabled:bg-[#ffa1a1] py-[0.8rem] w-[190px] text-white font-medium shadow-md rounded-[3px]"
-                              >
-                                Currently Unavailable
-                              </button>
-                            );
-                          } else if (product.stock <= 0) {
-                            // Case: Product is out of stock but not deleted
-                            return (
-                              <button
-                                disabled={true}
-                                className="bg-secondary hover:shadow-lg disabled:bg-[#ffa1a1] py-[0.8rem] w-[190px] text-white font-medium shadow-md rounded-[3px]"
-                              >
-                                Out of Stock
-                              </button>
-                            );
-                          } else {
-                            // Case: Product is in stock
-                            return cart.find((item) => item.id === product.id) ? (
-                              <button
-                                onClick={() => handleGotoCart()}
-                                disabled={cartLoading}
-                                className="bg-primary hover:bg-secondary hover:shadow-lg disabled:bg-[#ffa1a1] transition-all duration-150 py-[0.8rem] w-[190px] text-white font-medium shadow-md rounded-[3px]"
-                              >
-                                {cartLoading ? <ButtonLoader /> : <>Go to Cart</>}
-                              </button>
-                            ) : (
-                              <button
-                                onClick={() => handleAddtoCart(product.id)}
-                                disabled={cartLoading}
-                                className="bg-primary hover:bg-secondary hover:shadow-lg disabled:bg-[#ffa1a1] transition-all duration-150 py-[0.8rem] w-[190px] text-white font-medium shadow-md rounded-[3px]"
-                              >
-                                {cartLoading ? <ButtonLoader /> : <>Add to Cart</>}
-                              </button>
-                            );
-                          }
-                        })()}
-
-                      </div>
-                      {/* {wishlist.find((item) => item.id === product.id) ? (
-                        <div
-                          onClick={() => {handleRemoveWishlistProduct(product.id)}} 
-                          className='px-[1.5rem] flex-center gap-x-[0.5rem] transition-all duration-150 py-[0.8rem] font-medium rounded-[3px] border-[2px] cursor-pointer border-primary hover:bg-tertiary'>
-                          <FavoriteIcon className="text-primary"/>
-                          <p>Wishlisted</p>
-                        </div>
-                      ) : (
-                        <div 
-                          onClick={() => {handleAddToWishlist(product.id)}}
-                          className='px-[1.5rem] flex-center gap-x-[0.5rem] transition-all duration-150 py-[0.8rem] font-medium rounded-[3px] border-[2px] cursor-pointer border-primary hover:bg-tertiary'>
-                          <FavoriteBorderIcon/>
-                          <p>Add to Wishlist</p>
-                        </div>                      
-                      )} */}
-                      {wishlist.find((item) => item.id === product.id) ? (
-                          <button disabled={wishlistLoading}>
-                            <FavoriteIcon 
-                            fontSize="large"
-                            onClick={() => {handleRemoveWishlistProduct(product.id)}}  
-                            className="text-primary self-center cursor-pointer hover:text-secondary"
-                          />
-                          </button>
-                      ) : (                          
-                          <button
-                            disabled={wishlistLoading}
-                          >
-                            <FavoriteBorderIcon
-                              fontSize="large"
-                              onClick={() => {handleAddToWishlist(product.id)}}
-                              className='self-center hover:text-primary cursor-pointer'
+                      <div className='flex flex-col gap-[1.2rem] flex-[2]'>
+                        <div className='flex flex-col gap-[0.2rem]'>
+                          <h2 className='font-bold text-[17px] text-ellipsis'>{product.name}</h2>
+                          <p className='text-lightGray text-[15px]'>#{product.category}</p>
+                          <Rating
+                            name="text-feedback"
+                            value={4}
+                            readOnly
+                            precision={0.5}
+                            size="medium"
+                            emptyIcon={<StarIcon style={{ opacity: 0.55 }} fontSize="inherit" />}
                             />
-                          </button>
-                      )}
-                    </div>
+                        </div>
+                        <div>
+                          <p className='text-[green] font-semibold text-[14px]'>Best Price</p>
+                          <div className="flex items-center gap-[0.7rem]">
+                              <p className="font-[Roboto] text-black font-semibold text-[30px]">₹{new Intl.NumberFormat('en-IN').format(product.price)}</p>
+                              <p className="line-through font-[Roboto] text-[#777] text-[22px] font-normal">{product.mrp ? `₹${new Intl.NumberFormat('en-IN').format(product.mrp)}` : ""}</p>
+                          </div>
+                        </div>
+                        <div className='flex flex-col gap-[0.5rem]'>
+                          <p className='font-bold text-[14px] text-darkGray2'>Description</p>
+                            {!isExpanded ? (
+                              <LinesEllipsis
+                                text={product.description}
+                                maxLine="4"
+                                ellipsis="..."
+                                trimRight
+                                basedOn="letters"
+                                className="text-[14px] text-mediumGray"
+                              />
+                            ) : (
+                              <p className="text-[14px] text-mediumGray">{product.description}</p>
+                            )}
+                            <button
+                              className="text-blue-500 text-[15px] font-semibold mt-1 w-full text-start"
+                              onClick={() => setIsExpanded(!isExpanded)}
+                            >
+                              {isExpanded ? 'Read Less' : 'Read More'}
+                            </button>
+                        </div>
+                        <div className='flex align-center gap-x-[2rem] mt-2'>
+                          <div className='w-fit'>
+                            {(() => {
+                              if (product.is_deleted === 1) {
+                                // Case: Product is deleted
+                                return (
+                                  <button
+                                    disabled={true}
+                                    className="bg-secondary hover:shadow-lg disabled:bg-[#ffa1a1] py-[0.8rem] w-[190px] text-white font-medium shadow-md rounded-[3px]"
+                                  >
+                                    Currently Unavailable
+                                  </button>
+                                );
+                              } else if (product.stock <= 0) {
+                                // Case: Product is out of stock but not deleted
+                                return (
+                                  <button
+                                    disabled={true}
+                                    className="bg-secondary hover:shadow-lg disabled:bg-[#ffa1a1] py-[0.8rem] w-[190px] text-white font-medium shadow-md rounded-[3px]"
+                                  >
+                                    Out of Stock
+                                  </button>
+                                );
+                              } else {
+                                // Case: Product is in stock
+                                return cart.find((item) => item.id === product.id) ? (
+                                  <button
+                                    onClick={() => handleGotoCart()}
+                                    disabled={cartLoading}
+                                    className="bg-primary hover:bg-secondary hover:shadow-lg disabled:bg-[#ffa1a1] transition-all duration-150 py-[0.8rem] w-[190px] text-white font-medium shadow-md rounded-[3px]"
+                                  >
+                                    {cartLoading ? <ButtonLoader /> : <>Go to Cart</>}
+                                  </button>
+                                ) : (
+                                  <button
+                                    onClick={() => handleAddtoCart(product.id)}
+                                    disabled={cartLoading}
+                                    className="bg-primary hover:bg-secondary hover:shadow-lg disabled:bg-[#ffa1a1] transition-all duration-150 py-[0.8rem] w-[190px] text-white font-medium shadow-md rounded-[3px]"
+                                  >
+                                    {cartLoading ? <ButtonLoader /> : <>Add to Cart</>}
+                                  </button>
+                                );
+                              }
+                            })()}
+                          </div>
+                          {wishlist.find((item) => item.id === product.id) ? (
+                              <button disabled={wishlistLoading}>
+                                <FavoriteIcon 
+                                fontSize="large"
+                                onClick={() => {handleRemoveWishlistProduct(product.id)}}  
+                                className="text-primary self-center cursor-pointer hover:text-secondary"
+                              />
+                              </button>
+                          ) : (                          
+                              <button
+                                disabled={wishlistLoading}
+                              >
+                                <FavoriteBorderIcon
+                                  fontSize="large"
+                                  onClick={() => {handleAddToWishlist(product.id)}}
+                                  className='self-center hover:text-primary cursor-pointer'
+                                />
+                              </button>
+                          )}
+                        </div>
+                      </div>
                   </div>
+                  ))}
+                </div>
               </div>
-              ))}
+
             </div>
           </div>
-
           {shuffledProducts.length > 0 && (
             <div className='flex flex-col w-full p-[5rem] gap-y-[2rem]'>
             <div className='flex justify-between'>

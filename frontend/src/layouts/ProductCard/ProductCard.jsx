@@ -57,7 +57,7 @@ const ProductCard = ({ product }) => {
         key={product.id}
         // onMouseOver={() => handleProductCardHover(product.id)}
         // onMouseLeave={handleMouseLeave}
-        className="relative flex flex-col bg-white w-[280px] h-fit shadow-lg border-[1px] border-lightGray3 rounded-[7px]"
+        className="relative flex flex-col bg-white w-[300px] h-fit shadow-lg border-[1px] border-lightGray3 rounded-[7px]"
       >
         {wishlist.find((item) => item.id === product.id) ? (
             <button
@@ -65,7 +65,7 @@ const ProductCard = ({ product }) => {
             >
               <FavoriteIcon
                 onClick={() => {handleRemoveWishlistProduct(product.id)}}  
-                className="absolute top-[12px] right-[12px] text-primary cursor-pointer hover:text-secondary"
+                className="absolute top-[12px] right-[12px] text-primary cursor-pointer hover:text-secondary bg-white rounded-full p-[2px] shadow-md"
               />
             </button>
         ) : (                          
@@ -74,20 +74,20 @@ const ProductCard = ({ product }) => {
             >
               <FavoriteBorderIcon
                 onClick={() => {handleAddToWishlist(product.id)}}
-                className='absolute top-[12px] right-[12px] hover:text-primary cursor-pointer'
+                className='absolute top-[12px] right-[12px] hover:text-primary cursor-pointer bg-white rounded-full p-[2px] shadow-md'
               />
             </button>
         )}
-        <Link className="flex-center p-[2rem]" to={`/product/${product.id}`}>
+        <Link className="flex-center px-[0.5rem] py-[1rem]" to={`/product/${product.id}`}>
           <img
-            className="h-[120px]"
+            className="h-[300px] object-contain"
             src={product.image_url}
             alt={product.name}
           />
         </Link>
-        <div className="flex flex-col gap-[0.5rem] bg-[#f9f9f9] rounded-[0_0_7px_7px] px-[1.5rem] pt-[1.5rem] pb-[4.5rem]">
+        <div className="flex flex-col gap-[0.5rem] bg-[#f9f9f9] rounded-[0_0_7px_7px] px-[1rem] pt-[1rem] pb-[4.5rem]">
           <div className="flex flex-col">
-            <Link to={`/product/${product.id}`} className="font-bold text-ellipsis whitespace-nowrap overflow-hidden">
+            <Link to={`/product/${product.id}`} className="font-semibold text-ellipsis whitespace-nowrap overflow-hidden text-[14px]">
                 {product.name}
             </Link>
             <Rating
@@ -102,14 +102,21 @@ const ProductCard = ({ product }) => {
             />
           </div>
           <div className="flex items-center gap-[0.5rem]">
-            <p className="font-[Roboto] text-black font-semibold text-[17px]">
-              ₹{new Intl.NumberFormat("en-IN").format(product.price)}
-            </p>
-            <p className="line-through font-[Roboto] text-[#777] text-[15px] font-normal">
-              {product.mrp
-                ? `₹${new Intl.NumberFormat("en-IN").format(product.mrp)}`
-                : ""}
-            </p>
+            <div className="flex items-center gap-[0.5rem]">
+              <p className="font-[Roboto] text-black font-semibold text-[17px]">
+                ₹{new Intl.NumberFormat("en-IN").format(product.price)}
+              </p>
+              <p className="line-through font-[Roboto] text-[#777] text-[15px] font-normal">
+                {product.mrp
+                  ? `₹${new Intl.NumberFormat("en-IN").format(product.mrp)}`
+                  : ""}
+              </p>
+            </div>
+            {(product.stock <=5 && product.stock > 0) && (
+              <p className="text-[12px] text-primary font-semibold">
+                  Only {product.stock} items are left
+              </p>
+            )}
           </div>
         </div>
         {product.stock === 0 && ( 
