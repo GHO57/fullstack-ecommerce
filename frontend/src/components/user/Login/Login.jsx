@@ -1,11 +1,14 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClose } from "@fortawesome/free-solid-svg-icons";
 import { Link, useNavigate } from "react-router-dom";
-import { sendotp, loginsignup, signupuser, loaduser } from "../../../features/user/userThunks";
+import {
+    sendotp,
+    loginsignup,
+    signupuser,
+} from "../../../features/user/userThunks";
 import { useDispatch, useSelector } from "react-redux";
 import { LoginLoader } from "../../../layouts";
-import { loadCart } from "../../../features/cart/cartThunks";
 
 const Login = ({ trigger, setTrigger }) => {
     const [Email, setEmail] = useState("");
@@ -17,17 +20,8 @@ const Login = ({ trigger, setTrigger }) => {
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const {
-        user,
-        error,
-        loading,
-        loadingLogin,
-        isAuthenticated,
-        isLoggingIn,
-        newUser,
-        OTPSent,
-        message,
-    } = useSelector((state) => state.user);
+    const { loadingLogin, isAuthenticated, isLoggingIn, newUser, OTPSent } =
+        useSelector((state) => state.user);
 
     const closeLogin = () => {
         setTrigger(false);
@@ -117,10 +111,15 @@ const Login = ({ trigger, setTrigger }) => {
                         <div className="flex">
                             <div className="flex justify-between items-center flex-col bg-primary px-[3rem] py-[4rem] rounded-[4px_0_0_4px]">
                                 <h2 className="flex-center w-full select-none cursor-default font-extrabold text-[30px] text-white text-center">
-                                    <img className="w-[200px]" src="/genie-logo-white.svg" alt="" />
+                                    <img
+                                        className="w-[200px]"
+                                        src="/genie-logo-white.svg"
+                                        alt=""
+                                    />
                                 </h2>
                                 <p className="max-w-[200px] text-[11px] text-dimWhite">
-                                    By creating or logging into account, I accept{" "}
+                                    By creating or logging into account, I
+                                    accept{" "}
                                     <Link
                                         className="underline hover:text-white"
                                         to="/terms-and-conditions"
@@ -162,12 +161,16 @@ const Login = ({ trigger, setTrigger }) => {
                                                         className="input-theme"
                                                         type="text"
                                                         value={fullName}
-                                                        onChange={handleFullNameChange}
+                                                        onChange={
+                                                            handleFullNameChange
+                                                        }
                                                         required
                                                     />
                                                     <div
                                                         className={`placeholder ${
-                                                            fullName.length > 0 ? "active" : ""
+                                                            fullName.length > 0
+                                                                ? "active"
+                                                                : ""
                                                         }`}
                                                     >
                                                         Full Name
@@ -201,12 +204,16 @@ const Login = ({ trigger, setTrigger }) => {
                                                         type="text"
                                                         maxLength={6}
                                                         value={OTP}
-                                                        onChange={handleOTPChange}
+                                                        onChange={
+                                                            handleOTPChange
+                                                        }
                                                         required
                                                     />
                                                     <div
                                                         className={`placeholder ${
-                                                            OTP.length > 0 ? "active" : ""
+                                                            OTP.length > 0
+                                                                ? "active"
+                                                                : ""
                                                         }`}
                                                     >
                                                         OTP
@@ -245,7 +252,9 @@ const Login = ({ trigger, setTrigger }) => {
                                                 />
                                                 <div
                                                     className={`placeholder ${
-                                                        Email.length > 0 ? "active" : ""
+                                                        Email.length > 0
+                                                            ? "active"
+                                                            : ""
                                                     }`}
                                                 >
                                                     Email

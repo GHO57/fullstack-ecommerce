@@ -1,6 +1,6 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TablePagination, Tooltip, Paper, Fab, Button, IconButton, Modal, Box, FormControl, InputLabel, Select, MenuItem, Checkbox, ListItemText, TextField, InputAdornment, Stack, Chip } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TablePagination, Tooltip, Paper, Fab, Button, IconButton, Modal, Box, FormControl, InputLabel, Select, MenuItem, Checkbox, ListItemText, TextField, InputAdornment } from '@mui/material';
 import ModeEditIcon from '@mui/icons-material/ModeEdit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
@@ -11,7 +11,7 @@ import { Loader } from '../../../layouts';
 import AddProduct from '../AddProduct/AddProduct';
 import UpdateProduct from '../UpdateProduct/UpdateProduct';
 import { categories } from '../data';
-import { ToastContainer, toast, Slide } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const style = {
@@ -27,13 +27,13 @@ const style = {
     borderRadius: '3px',
 }
 
-const ITEM_HEIGHT = 48; 
+const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
 const MenuProps = {
     PaperProps: {
         style: {
             maxHeight: ITEM_HEIGHT * 5 + ITEM_PADDING_TOP,
-            borderRadius: 7, 
+            borderRadius: 7,
             marginLeft: '5rem'
         },
     },
@@ -51,8 +51,8 @@ const SellerProducts = () => {
 
     const dispatch = useDispatch()
 
-    const { seller, sellerProducts, sellerLoading, isSellerAuthenticated, sellerMessage, sellerError } = useSelector((state) => state.seller)
-    
+    const { sellerProducts, sellerLoading } = useSelector((state) => state.seller)
+
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [deleteConfirmation, setDeleteConfirmation] = useState(false)
@@ -69,7 +69,7 @@ const SellerProducts = () => {
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
-    
+
     const handleChangeRowsPerPage = (event) => {
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0);
@@ -115,7 +115,7 @@ const SellerProducts = () => {
     const handleMultipleDeleteModalClose = () => {
         setMultipleDeleteConfirmation(false)
     }
-    
+
     const handleMultipleProductsDelete = () => {
         dispatch(deleteMultipleProducts(selectedProducts))
         setSelectedProducts([])
@@ -172,7 +172,7 @@ const SellerProducts = () => {
     useEffect(() => {
         setPage(0)
     }, [categoryName, sortValue, searchProduct])
-    
+
 
     useEffect(() => {
         dispatch(getSellerProducts())
@@ -194,18 +194,18 @@ const SellerProducts = () => {
     };
 
     const filterProducts = (products, categories, searchTerm) => {
-    
+
         return products.filter(product => {
             const matchesCategory = categories.length === 0 || categories.includes(product.category)
             const matchesSearch = searchTerm === '' || product.name.toLowerCase().includes(searchTerm.toLowerCase())
-            
+
             return matchesCategory && matchesSearch
         })
     }
 
     const sortedAndFilteredProducts = useMemo(() => {
         return sortProducts(filterProducts(sellerProducts, categoryName, searchProduct), sortValue);
-    }, [sellerProducts, categoryName, searchProduct, sortValue]) 
+    }, [sellerProducts, categoryName, searchProduct, sortValue])
 
   return (
     <>
@@ -234,8 +234,8 @@ const SellerProducts = () => {
                         <div className='flex gap-[1rem]'>
                             <FormControl size='small' sx={{ minWidth: 150 }}>
                                 <InputLabel sx={{ fontFamily: 'Montserrat, sans-serif' }}>Category</InputLabel>
-                                <Select 
-                                    value={categoryName} 
+                                <Select
+                                    value={categoryName}
                                     onChange={handleCategoryNameChange}
                                     multiple
                                     input={<OutlinedInput label="Tag" />}
@@ -254,8 +254,8 @@ const SellerProducts = () => {
                             <FormControl size='small' sx={{ minWidth: 120 }}>
                                 <InputLabel sx={{ fontFamily: 'Montserrat, sans-serif' }}>Sort By</InputLabel>
                                 <Select
-                                    input={<OutlinedInput label="Tag" />} 
-                                    value={sortValue} 
+                                    input={<OutlinedInput label="Tag" />}
+                                    value={sortValue}
                                     onChange={handleSortValueChange}
                                     sx={{ borderRadius: '2px' }}>
                                     <MenuItem value="">
@@ -268,27 +268,27 @@ const SellerProducts = () => {
                                 </Select>
                             </FormControl>
                             <Button sx={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 600, borderRadius: '2px' }} onClick={handleMultipleDeleteModalOpen} variant='outlined' color='primary'>Delete Products</Button>
-                            <Modal 
+                            <Modal
                                 open={multipleDeleteConfirmation}
                                 onClose={handleMultipleDeleteModalClose}
                             >
                                 <Box className="flex flex-col justify-between" sx={style}>
                                     <p className='text-[18px]'>You're deleting {selectedProducts.length} products, Are you sure?</p>
                                     <Button
-                                        variant='contained' 
-                                        color='primary' 
+                                        variant='contained'
+                                        color='primary'
                                         sx={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 600, height: '2.5rem' }}
                                         onClick={handleMultipleProductsDelete}>
                                         Delete
-                                    </Button>                                                    
+                                    </Button>
                                 </Box>
                             </Modal>
                         </div>
                         <div>
-                            
-                            <TextField 
-                                variant='outlined' 
-                                size='small' 
+
+                            <TextField
+                                variant='outlined'
+                                size='small'
                                 label='Search'
                                 value={searchProduct}
                                 onChange={handleSearchproduct}
@@ -297,7 +297,7 @@ const SellerProducts = () => {
                                         <InputAdornment position='start'>
                                             <SearchIcon />
                                         </InputAdornment>
-                                    ),  
+                                    ),
                                     sx: { borderRadius: '2px', fontFamily: 'Montserrat, sans-serif', maxWidth: 220 }
                                 }}
                             />
@@ -309,14 +309,14 @@ const SellerProducts = () => {
                         </Stack>
                     </div> */}
                     <TableContainer sx={{ boxShadow:5 }} component={Paper}>
-                        <Table sx={{ minWidth: 650 }} aria-label="products table"> 
+                        <Table sx={{ minWidth: 650 }} aria-label="products table">
                             <TableHead>
                                 <TableRow sx={{ bgcolor: '#ff5151' }}>
                                     <TableCell sx={{...table_body_cell_properties, minWidth: 50, maxWidth: 50, display: 'flex', justifyContent: 'center', border: 0, borderColor: 'transparent' }} align="left">
                                         <Checkbox
                                             indeterminate={selectedProducts.length > 0 && selectedProducts.length < sellerProducts.length}
                                             checked={sellerProducts.length > 0 && selectedProducts.length === sellerProducts.length}
-                                            onChange={handleAllProductSelect} 
+                                            onChange={handleAllProductSelect}
                                             sx={{ color: 'white', '&.Mui-checked': { color: 'white' }, '&.MuiCheckbox-indeterminate' : { color: 'white' } }}
                                             >
                                         </Checkbox>
@@ -333,12 +333,12 @@ const SellerProducts = () => {
                             <TableBody>
                                 {(rowsPerPage > 0
                                     ? sortedAndFilteredProducts.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                    : sortedAndFilteredProducts).map((product, key) => (
+                                    : sortedAndFilteredProducts).map((product) => (
                                     <TableRow
                                         key={product.id}
                                     >
                                         <TableCell sx={{...table_body_cell_properties, minWidth: 50, maxWidth: 50}} align="center">
-                                            <Checkbox 
+                                            <Checkbox
                                                 checked={selectedProducts.includes(product.id)}
                                                 onChange={() => handleProductCheckboxSelect(product.id)}
                                                 sx={{ display: 'flex', justifyContent: 'center' }}>
@@ -372,25 +372,25 @@ const SellerProducts = () => {
                                             <div className='flex gap-[0.4rem] justify-end'>
                                                 <IconButton onClick={() => {handleUpdateProductOpen(product.id)}} aria-label='update' size='medium'><ModeEditIcon fontSize='inherit' /></IconButton>
                                                 <IconButton onClick={() => {handleDeleteModalOpen(product.id)}} aria-label='delete' size='medium'><DeleteIcon fontSize='inherit' /></IconButton>
-                                                <Modal 
+                                                <Modal
                                                     open={deleteConfirmation}
                                                     onClose={handleDeleteModalClose}
                                                 >
                                                     <Box className="flex flex-col justify-between" sx={style}>
                                                         <p className='text-[18px]'>Are you sure about deleting?</p>
                                                         <Button
-                                                            variant='contained' 
-                                                            color='primary' 
+                                                            variant='contained'
+                                                            color='primary'
                                                             sx={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 600, height: '2.5rem' }}
                                                             onClick={handleProductDelete}>
                                                             Delete
-                                                        </Button>                                                    
+                                                        </Button>
                                                     </Box>
                                                 </Modal>
                                             </div>
                                         </TableCell>
                                     </TableRow>
-                                ))}    
+                                ))}
                             </TableBody>
                         </Table>
                     </TableContainer>
@@ -400,7 +400,7 @@ const SellerProducts = () => {
                                 <AddIcon />
                             </Fab>
                         </Tooltip>
-                        <TablePagination 
+                        <TablePagination
                             component="div"
                             rowsPerPageOptions={[5, 10, 15, 20, { label: 'All', value: -1 }]}
                             colSpan={3}
