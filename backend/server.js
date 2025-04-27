@@ -26,18 +26,6 @@ const startServer = async () => {
                 `\x1b[32m+\x1b[0m Server is running at http://localhost:${process.env.PORT}/`
             );
         });
-
-        // io.on("connection", (socket) => {
-        //     // console.log(`Client Connected:`, socket.id);
-
-        //     socket.on("inventory_update", (data) => {
-        //         // console.log("Received stock update from client:", data);
-        //     });
-
-        //     socket.on("disconnect", () => {
-        //         // console.log("User disconnected :", socket.id);
-        //     });
-        // });
     } catch (error) {
         console.error("\x1b[31m- Failed to start the server: \x1b[0m", error.message);
         process.exit(1);

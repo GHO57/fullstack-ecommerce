@@ -18,7 +18,8 @@ const calculatePriceAndMRP = (cartItems) => {
 
     for (i = 0; i < cartItems.length; i++) {
         if (cartItems[i].is_deleted === 0 && cartItems[i].stock > 0) {
-            totalPrice = totalPrice + cartItems[i].price * cartItems[i].quantity;
+            totalPrice =
+                totalPrice + cartItems[i].price * cartItems[i].quantity;
             totalMRP = totalMRP + cartItems[i].mrp * cartItems[i].quantity;
             totalValidProducts++;
         }
@@ -34,15 +35,16 @@ exports.addToCart = catchAsyncErrors(async (req, res, next) => {
     const { cartId } = req.user[0][0];
 
     try {
-        const [productInfo] = await pool.execute("SELECT * FROM products WHERE id = ?", [
-            product_id,
-        ]);
+        const [productInfo] = await pool.execute(
+            "SELECT * FROM products WHERE id = ?",
+            [product_id],
+        );
         if (productInfo.length <= 0) {
             return next(new errorHandler("Invalid product ID", 400));
         }
         const [cartProduct] = await pool.execute(
             "SELECT * FROM cart_items WHERE cart_id = ? && product_id = ?",
-            [cartId, productInfo[0].id]
+            [cartId, productInfo[0].id],
         );
         const stock = productInfo[0].stock;
 
@@ -54,11 +56,11 @@ exports.addToCart = catchAsyncErrors(async (req, res, next) => {
 
                 await pool.execute(
                     "INSERT INTO cart_items (id, cart_id, product_id, quantity) VALUES (?, ?, ?, 1)",
-                    [uuid, cartId, productInfo[0].id]
+                    [uuid, cartId, productInfo[0].id],
                 );
                 const [cartItems] = await pool.execute(
                     "SELECT p.id, p.name, p.price, p.mrp, p.image_url, p.stock, c.quantity, p.is_deleted, c.created_at FROM products p, cart_items c WHERE c.product_id = p.id && c.cart_id = ? ORDER BY created_at DESC",
-                    [cartId]
+                    [cartId],
                 );
 
                 const totalItems = cartItems.length;
@@ -82,11 +84,11 @@ exports.addToCart = catchAsyncErrors(async (req, res, next) => {
                 if (stock > quantity - 1) {
                     await pool.execute(
                         "UPDATE cart_items SET quantity = ? WHERE cart_id = ? && product_id = ?",
-                        [quantity, cartId, productInfo[0].id]
+                        [quantity, cartId, productInfo[0].id],
                     );
                     const [cartItems] = await pool.execute(
                         "SELECT p.id, p.name, p.price, p.mrp, p.image_url, p.stock, c.quantity, p.is_deleted, c.created_at FROM products p, cart_items c WHERE c.product_id = p.id && c.cart_id = ? ORDER BY created_at DESC",
-                        [cartId]
+                        [cartId],
                     );
 
                     const totalItems = cartItems.length;
@@ -106,8 +108,8 @@ exports.addToCart = catchAsyncErrors(async (req, res, next) => {
                 } else {
                     return next(
                         new errorHandler(
-                            `Sorry only ${stock} ${productInfo[0].name} were available.`
-                        )
+                            `Sorry only ${stock} ${productInfo[0].name} were available.`,
+                        ),
                     );
                 }
             }
@@ -130,15 +132,16 @@ exports.removeFromCart = catchAsyncErrors(async (req, res, next) => {
     const { cartId } = req.user[0][0];
 
     try {
-        const [productInfo] = await pool.execute("SELECT * FROM products WHERE id = ?", [
-            product_id,
-        ]);
+        const [productInfo] = await pool.execute(
+            "SELECT * FROM products WHERE id = ?",
+            [product_id],
+        );
         if (productInfo.length <= 0) {
             return next(new errorHandler("Invalid product ID", 400));
         }
         const [cartProduct] = await pool.execute(
             "SELECT * FROM cart_items WHERE cart_id = ? && product_id = ?",
-            [cartId, productInfo[0].id]
+            [cartId, productInfo[0].id],
         );
 
         if (cartProduct.length > 0 && cartProduct[0].quantity > 0) {
@@ -147,11 +150,11 @@ exports.removeFromCart = catchAsyncErrors(async (req, res, next) => {
 
                 await pool.execute(
                     "UPDATE cart_items SET quantity = ? WHERE cart_id = ? && product_id = ?",
-                    [quantity, cartId, productInfo[0].id]
+                    [quantity, cartId, productInfo[0].id],
                 );
                 const [cartItems] = await pool.execute(
                     "SELECT p.id, p.name, p.price, p.mrp, p.image_url, p.stock, c.quantity, p.is_deleted, c.created_at FROM products p, cart_items c WHERE c.product_id = p.id && c.cart_id = ? ORDER BY created_at DESC",
-                    [cartId]
+                    [cartId],
                 );
 
                 const totalItems = cartItems.length;
@@ -169,13 +172,13 @@ exports.removeFromCart = catchAsyncErrors(async (req, res, next) => {
                     totalValidProducts,
                 });
             } else {
-                await pool.execute("DELETE FROM cart_items WHERE cart_id = ? && product_id = ?", [
-                    cartId,
-                    productInfo[0].id,
-                ]);
+                await pool.execute(
+                    "DELETE FROM cart_items WHERE cart_id = ? && product_id = ?",
+                    [cartId, productInfo[0].id],
+                );
                 const [cartItems] = await pool.execute(
                     "SELECT p.id, p.name, p.price, p.mrp, p.image_url, p.stock, c.quantity, p.is_deleted, c.created_at FROM products p, cart_items c WHERE c.product_id = p.id && c.cart_id = ? ORDER BY created_at DESC",
-                    [cartId]
+                    [cartId],
                 );
 
                 const totalItems = cartItems.length;
@@ -206,17 +209,21 @@ exports.removeFromCart = catchAsyncErrors(async (req, res, next) => {
 exports.getCartItems = catchAsyncErrors(async (req, res, next) => {
     const { cartId } = req.user[0][0];
 
-    const [cartItems] = await pool.execute("SELECT * FROM cart_items WHERE cart_id = ?", [cartId]);
+    const [cartItems] = await pool.execute(
+        "SELECT * FROM cart_items WHERE cart_id = ?",
+        [cartId],
+    );
 
     if (cartItems.length > 0) {
         const [allCartItems] = await pool.execute(
             "SELECT p.id, p.name, p.price, p.mrp, p.image_url, p.stock, c.quantity, p.is_deleted, c.created_at FROM products p, cart_items c WHERE c.product_id = p.id && c.cart_id = ? ORDER BY created_at DESC",
-            [cartId]
+            [cartId],
         );
 
         const totalItems = allCartItems.length;
 
-        const { totalPrice, totalMRP, totalValidProducts } = calculatePriceAndMRP(allCartItems);
+        const { totalPrice, totalMRP, totalValidProducts } =
+            calculatePriceAndMRP(allCartItems);
 
         res.status(200).json({
             success: true,
@@ -241,27 +248,29 @@ exports.deleteItemFromCart = catchAsyncErrors(async (req, res, next) => {
     const { product_id } = req.body;
 
     try {
-        const [productInfo] = await pool.execute("SELECT * FROM products WHERE id = ?", [
-            product_id,
-        ]);
+        const [productInfo] = await pool.execute(
+            "SELECT * FROM products WHERE id = ?",
+            [product_id],
+        );
         const [cartProduct] = await pool.execute(
             "SELECT * FROM cart_items WHERE cart_id = ? && product_id = ?",
-            [cartId, productInfo[0].id]
+            [cartId, productInfo[0].id],
         );
 
         if (cartProduct.length > 0 && cartProduct[0].quantity > 0) {
-            await pool.execute("DELETE FROM cart_items WHERE cart_id = ? && product_id = ?", [
-                cartId,
-                product_id,
-            ]);
+            await pool.execute(
+                "DELETE FROM cart_items WHERE cart_id = ? && product_id = ?",
+                [cartId, product_id],
+            );
             const [cartItems] = await pool.execute(
                 "SELECT p.id, p.name, p.price, p.mrp, p.image_url, p.stock, c.quantity, p.is_deleted, c.created_at FROM products p, cart_items c WHERE c.product_id = p.id && c.cart_id = ? ORDER BY created_at DESC",
-                [cartId]
+                [cartId],
             );
 
             const totalItems = cartItems.length;
 
-            const { totalPrice, totalMRP, totalValidProducts } = calculatePriceAndMRP(cartItems);
+            const { totalPrice, totalMRP, totalValidProducts } =
+                calculatePriceAndMRP(cartItems);
 
             res.status(200).json({
                 success: true,
@@ -286,14 +295,15 @@ exports.validateCart = catchAsyncErrors(async (req, res, next) => {
     const { cartId } = req.user[0][0];
 
     try {
-        const [cartItems] = await pool.execute("SELECT * FROM cart_items WHERE cart_id = ?", [
-            cartId,
-        ]);
+        const [cartItems] = await pool.execute(
+            "SELECT * FROM cart_items WHERE cart_id = ?",
+            [cartId],
+        );
 
         if (cartItems.length > 0) {
             const [allCartItems] = await pool.execute(
                 "SELECT p.id, p.name, p.price, p.mrp, p.image_url, p.stock, c.quantity, p.is_deleted, c.created_at FROM products p, cart_items c WHERE c.product_id = p.id && c.cart_id = ? ORDER BY created_at DESC",
-                [cartId]
+                [cartId],
             );
 
             let totalPrice = 0;
@@ -344,12 +354,15 @@ exports.clearCart = catchAsyncErrors(async (req, res, next) => {
     const { cartId } = req.user[0][0];
 
     try {
-        const [cartItems] = await pool.execute("SELECT * FROM cart_items WHERE cart_id = ?", [
-            cartId,
-        ]);
+        const [cartItems] = await pool.execute(
+            "SELECT * FROM cart_items WHERE cart_id = ?",
+            [cartId],
+        );
 
         if (cartItems.length > 0) {
-            await pool.execute("DELETE FROM cart_items WHERE cart_id = ?", [cartId]);
+            await pool.execute("DELETE FROM cart_items WHERE cart_id = ?", [
+                cartId,
+            ]);
 
             res.status(200).json({
                 success: true,
